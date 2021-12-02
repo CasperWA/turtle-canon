@@ -32,9 +32,9 @@ def update_file(filename: str, sub_line: "Tuple[str, str]", strip: str = None) -
         handle.write("\n")
 
 
-@task(help={"ver": "Battery Data Catalog version to set"})
+@task(help={"ver": "Turtle Canon version to set"})
 def setver(_, ver=""):
-    """Sets the Battery Data Catalog version"""
+    """Sets the Turtle Canon version"""
     match = re.fullmatch(
         (
             r"v?(?P<version>[0-9]+(\.[0-9]+){2}"  # Major.Minor.Patch
