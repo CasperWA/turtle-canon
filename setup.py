@@ -10,9 +10,11 @@ TOP_DIR = Path(__file__).parent.resolve()
 with open(TOP_DIR / "turtle_canon/__init__.py", "r") as handle:
     VERSION = AUTHOR = AUTHOR_EMAIL = None
     for line in handle.readlines():
-        VERSION_match = re.match(r'__version__ = "(?P<version>.+)"', line)
-        AUTHOR_match = re.match(r'__author__ = "(?P<author>.+)"', line)
-        AUTHOR_EMAIL_match = re.match(r'__author_email__ = "(?P<email>.+)"', line)
+        VERSION_match = re.match(r'__version__ = (\'|")(?P<version>.+)(\'|")', line)
+        AUTHOR_match = re.match(r'__author__ = (\'|")(?P<author>.+)(\'|")', line)
+        AUTHOR_EMAIL_match = re.match(
+            r'__author_email__ = (\'|")(?P<email>.+)(\'|")', line
+        )
 
         if VERSION_match is not None:
             VERSION = VERSION_match
@@ -62,26 +64,34 @@ setup(
     author=AUTHOR,
     author_email=AUTHOR_EMAIL,
     url="https://github.com/CasperWA/turtle-canon",
-    description="A simple Data Catalog implementation for scientific battery data.",
+    description="A tool for canonizing Turtle (`.ttl`) ontology files.",
     long_description=(TOP_DIR / "README.md").read_text(),
     long_description_content_type="text/markdown",
     packages=find_packages(),
     include_package_data=True,
-    python_requires=">=3.7",
+    python_requires=">=3.9",
     install_requires=BASE,
     extras_require={"dev": DEV, "docs": DOCS},
-    keywords="materials database batteries",
+    keywords="ontology turtle",
+    entry_points={
+        "console_scripts": [
+            "turtle-canon = turtle_canon.cli.cmd_turtle_canon:main",
+        ],
+    },
     classifiers=[
-        "Development Status :: 4 - Beta",
-        "Programming Language :: Python :: 3 :: Only",
-        "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.8",
-        "Programming Language :: Python :: 3.9",
+        "Development Status :: 2 - Pre-Alpha",
+        "Environment :: Console",
         "Intended Audience :: Developers",
-        "Topic :: Database",
-        "Topic :: Database :: Database Engines/Servers",
-        "Topic :: Internet :: WWW/HTTP :: WSGI :: Server",
-        "Topic :: Scientific/Engineering :: Chemistry",
-        "Topic :: Scientific/Engineering :: Physics",
+        "Intended Audience :: Science/Research",
+        "License :: OSI Approved :: MIT License",
+        "Natural Language :: English",
+        "Programming Language :: Python :: 3 :: Only",
+        "Programming Language :: Python :: 3.9",
+        "Topic :: Software Development",
+        "Topic :: Software Development :: Pre-processors",
+        "Topic :: Software Development :: Testing",
+        "Topic :: Software Development :: Version Control",
+        "Topic :: Text Processing",
+        "Topic :: Utilities",
     ],
 )
