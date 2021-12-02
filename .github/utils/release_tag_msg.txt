@@ -1,0 +1,6 @@
+TAG_NAME
+
+The full release changelog can be seen in the
+[online docs](https://CasperWA.github.io/turtle-canon/CHANGELOG/)
+and in the
+[repository source file](https://github.com/CasperWA/turtle-canon/blob/TAG_NAME/CHANGELOG.md).

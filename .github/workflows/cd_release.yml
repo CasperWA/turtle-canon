@@ -1,0 +1,121 @@
+name: CD - Release
+
+on:
+  release:
+    types:
+    - published
+
+env:
+  PUBLISH_UPDATE_BRANCH: main
+  GIT_USER_NAME: CasperWA
+  GIT_USER_EMAIL: "casper+github@welzel.nu"
+
+jobs:
+
+  update-and-publish:
+    name: Update CHANGELOG and documentation
+    runs-on: ubuntu-latest
+    if: github.repository == 'CasperWA/turtle-canon' && startsWith(github.ref, 'refs/tags/v')
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+
+    - name: Install Python dependencies
+      run: |
+        python -m pip install -U pip
+        pip install -U setuptools wheel
+        pip install -U -e .[dev]
+
+    - name: Update changelog
+      uses: CharMixer/auto-changelog-action@v1
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        release_branch: ${{ env.PUBLISH_UPDATE_BRANCH }}
+
+    - name: Update documentation and version - Commit changes and update tag
+      run: .github/utils/update_docs.sh
+
+    - name: Push updates to '${{ env.PUBLISH_UPDATE_BRANCH }}'
+      uses: CasperWA/push-protected@v2
+      with:
+        token: ${{ secrets.RELEASE_PAT }}
+        branch: ${{ env.PUBLISH_UPDATE_BRANCH }}
+        force: true
+        tags: true
+
+    - name: Get tagged versions
+      run: echo "PREVIOUS_VERSION=$(git tag -l --sort -version:refname | sed -n 2p)" >> $GITHUB_ENV
+
+    - name: Create release-specific changelog
+      uses: CharMixer/auto-changelog-action@v1
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        release_branch: ${{ env.PUBLISH_UPDATE_BRANCH }}
+        since_tag: "${{ env.PREVIOUS_VERSION }}"
+        output: "release_changelog.md"
+
+    - name: Append changelog to release body
+      run: |
+        gh api /repos/${{ github.repository }}/releases/${{ github.event.release.id }} --jq '.body' > release_body.md
+        cat release_changelog.md >> release_body.md
+        gh api /repos/${{ github.repository }}/releases/${{ github.event.release.id }} -X PATCH -F body='@release_body.md'
+      env:
+        GITHUB_TOKEN: ${{ secrets.RELEASE_PAT }}
+
+    # - name: Build source distribution
+    #   run: python ./setup.py sdist
+
+    # - name: Publish package to TestPyPI
+    #   uses: pypa/gh-action-pypi-publish@master
+    #   with:
+    #     user: __token__
+    #     password: ${{ secrets.TEST_PYPI_TOKEN }}
+    #     repository_url: "https://test.pypi.org/legacy"
+
+    # - name: Publish package to PyPI
+    #   uses: pypa/gh-action-pypi-publish@master
+    #   with:
+    #     user: __token__
+    #     password: ${{ secrets.PYPI_TOKEN }}
+
+  docs:
+    name: Build and deploy documentation
+    needs: update-and-publish
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+        ref: ${{ env.PUBLISH_UPDATE_BRANCH }}
+        token: ${{ secrets.RELEASE_PAT }}
+
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+
+    - name: Install Python dependencies
+      run: |
+        python -m pip install -U pip
+        pip install -U setuptools wheel
+        pip install -U -e .[docs]
+
+    - name: Set up git user
+      run: |
+        git config --global user.name "${{ env.GIT_USER_NAME }}"
+        git config --global user.email "${{ env.GIT_USER_EMAIL }}"
+
+    - name: Deploy documentation
+      run: |
+        mike deploy --push --remote origin --branch gh-pages --update-aliases --config-file mkdocs.yml ${GITHUB_REF#refs/tags/v} stable
+        mike deploy --push --remote origin --branch gh-pages --update-aliases --config-file mkdocs.yml latest ${{ env.PUBLISH_UPDATE_BRANCH }}
