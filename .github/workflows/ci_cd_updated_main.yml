@@ -82,11 +82,11 @@ jobs:
         fetch-depth: 0
         token: ${{ secrets.RELEASE_PAT }}
 
-    - name: Set up Python 3.8
+    - name: Set up Python 3.9
       if: env.RELEASE_RUN == 'false'
       uses: actions/setup-python@v2
       with:
-        python-version: 3.8
+        python-version: 3.9
 
     - name: Install dependencies
       if: env.RELEASE_RUN == 'false'
