@@ -3,7 +3,10 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from .conftest import CLIRunner
+    from subprocess import CalledProcessError, CompletedProcess
+    from typing import Union
+
+    from .conftest import CLIOutput, CLIRunner
 
 
 def test_version(clirunner: "CLIRunner") -> None:
@@ -14,13 +17,29 @@ def test_version(clirunner: "CLIRunner") -> None:
     assert output.stdout == f"Turtle Canon version {__version__}\n"
 
 
-def test_simple_run(clirunner: "CLIRunner", simple_ttl_file: Path) -> None:
+def test_absolute_path(clirunner: "CLIRunner", simple_ttl_file: Path) -> None:
     """Simple test run with minimalistic Turtle file."""
-    paths = [str(simple_ttl_file), f"../../static/{simple_ttl_file.name}"]
+    output: "Union[CalledProcessError, CLIOutput, CompletedProcess]" = clirunner(
+        [str(simple_ttl_file)]
+    )
 
-    for path in paths:
-        output = clirunner([path])
+    assert (
+        output.stdout == output.stderr == ""
+    ), f"STDOUT: {output.stdout}\nSTDERR: {output.stderr}"
 
-        assert (
-            "downloading" in output.stdout
-        ), f"STDOUT: {output.stdout}\nSTDERR: {output.stderr}"
+
+def test_relative_path(clirunner: "CLIRunner", simple_ttl_file: Path) -> None:
+    """Simple test run with minimalistic Turtle file."""
+    relative_path = simple_ttl_file.relative_to("/tmp")
+    assert str(relative_path) == str(
+        Path(simple_ttl_file.parent.name) / simple_ttl_file.name
+    )
+    assert not relative_path.is_absolute()
+
+    output: "Union[CalledProcessError, CLIOutput, CompletedProcess]" = clirunner(
+        [str(relative_path)], run_dir="/tmp"
+    )
+
+    assert (
+        output.stdout == output.stderr == ""
+    ), f"STDOUT: {output.stdout}\nSTDERR: {output.stderr}"
