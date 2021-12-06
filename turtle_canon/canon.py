@@ -1,16 +1,12 @@
 """The main `turtle-canon` module."""
-from contextlib import redirect_stdout
-from os import devnull as DEVNULL
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import TYPE_CHECKING
 
+from rdflib import Graph
+
 from turtle_canon.utils import exceptions, warnings
 
-# Avoid printing Owlready2 warnings to console
-with open(DEVNULL, "w") as handle:
-    with redirect_stdout(handle):
-        import ontopy
 
 if TYPE_CHECKING:
     from typing import Union
@@ -31,7 +27,7 @@ def canonize(ttl_file: "Union[Path, str]") -> None:
 
     """
     valid_ttl_file = validate_turtle(ttl_file)
-    loaded_ontology = ontopy.get_ontology(str(valid_ttl_file)).load(format="turtle")
+    loaded_ontology = Graph().parse(location=str(ttl_file), format="turtle")
     export_ontology(loaded_ontology, valid_ttl_file)
 
 
@@ -57,7 +53,7 @@ def validate_turtle(ttl_file: "Union[Path, str]") -> Path:
     return ttl_file
 
 
-def export_ontology(ontology: ontopy.ontology.Ontology, filename: Path) -> None:
+def export_ontology(ontology: Graph, filename: Path) -> None:
     """Export an ontology as a Turtle file.
 
     Parameters:
@@ -72,7 +68,7 @@ def export_ontology(ontology: ontopy.ontology.Ontology, filename: Path) -> None:
 
     with TemporaryDirectory() as tmp_dir:
         tmp_ttl_file = Path(tmp_dir) / "tmp_ttl_file.ttl"
-        ontology.save(tmp_ttl_file, format="turtle")
+        ontology.serialize(tmp_ttl_file, format="turtle")
         canonized_ttl = tmp_ttl_file.read_text(encoding="utf8")
 
     if not canonized_ttl:

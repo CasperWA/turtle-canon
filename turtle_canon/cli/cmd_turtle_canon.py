@@ -3,7 +3,6 @@
 import argparse
 import logging
 from pathlib import Path
-import sys
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -57,6 +56,3 @@ def main(args: "List[str]" = None) -> None:
         print_error(exception, exit_after=True)
     except TurtleCanonWarning as warning:
         print_warning(warning)
-        sys.exit()
-    else:
-        sys.exit()
