@@ -1,5 +1,6 @@
 """The main `turtle-canon` module."""
 from pathlib import Path
+import re
 from tempfile import TemporaryDirectory
 from typing import TYPE_CHECKING
 
@@ -68,10 +69,16 @@ def export_ontology(ontology: Graph, filename: Path) -> None:
 
     with TemporaryDirectory() as tmp_dir:
         tmp_turtle_file = Path(tmp_dir) / "tmp_turtle_file.ttl"
-        ontology.serialize(tmp_turtle_file, format="turtle")
-        canonized_ttl = tmp_turtle_file.read_text(encoding="utf8")
+        try:
+            ontology.serialize(tmp_turtle_file, format="turtle")
+        except Exception as exc:
+            raise exceptions.FailedExportToFile(
+                f"Failed to properly save the loaded ontology from {filename} to file."
+            ) from exc
+        else:
+            canonized_ttl = tmp_turtle_file.read_text(encoding="utf8")
 
-    if not canonized_ttl:
+    if not canonized_ttl or re.match(r"^\s$", canonized_ttl):
         raise exceptions.FailedExportToFile(
             f"Failed to properly save the loaded ontology from {filename} to file."
         )

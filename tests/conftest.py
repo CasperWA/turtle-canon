@@ -60,3 +60,20 @@ def single_turtle_permutations(top_dir: Path) -> "List[Path]":
             f"Failed to remove temporary directory at {tmpdir.name}. "
             f"Content:\n{os.listdir(tmpdir.name)}"
         )
+
+
+@pytest.fixture
+def tmp_dir() -> Path:
+    """Open and yield a temporary directory."""
+    import os
+    from tempfile import TemporaryDirectory
+
+    try:
+        tmpdir = TemporaryDirectory()
+        yield Path(tmpdir.name).resolve()
+    finally:
+        tmpdir.cleanup()
+        assert not Path(tmpdir.name).exists(), (
+            f"Failed to remove temporary directory at {tmpdir.name}. "
+            f"Content:\n{os.listdir(tmpdir.name)}"
+        )
