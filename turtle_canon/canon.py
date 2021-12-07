@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from typing import Union
 
 
-def canonize(ttl_file: "Union[Path, str]") -> None:
+def canonize(turtle_file: "Union[Path, str]") -> None:
     """The main function for running `turtle-canon`.
 
     Workflow:
@@ -22,35 +22,35 @@ def canonize(ttl_file: "Union[Path, str]") -> None:
     - Export Ontology as Turtle file (overwriting loaded Turtle file as default).
 
     Parameters:
-        ttl_file: An absolute path or `pathlib.Path` object representing the Turtle
+        turtle_file: An absolute path or `pathlib.Path` object representing the Turtle
             file location.
 
     """
-    valid_ttl_file = validate_turtle(ttl_file)
-    loaded_ontology = Graph().parse(location=str(ttl_file), format="turtle")
-    export_ontology(loaded_ontology, valid_ttl_file)
+    valid_turtle_file = validate_turtle(turtle_file)
+    loaded_ontology = Graph().parse(location=str(turtle_file), format="turtle")
+    export_ontology(loaded_ontology, valid_turtle_file)
 
 
-def validate_turtle(ttl_file: "Union[Path, str]") -> Path:
+def validate_turtle(turtle_file: "Union[Path, str]") -> Path:
     """Validate a Turtle file.
 
     Parameters:
-        ttl_file: An absolute path or `pathlib.Path` object representing the Turtle
+        turtle_file: An absolute path or `pathlib.Path` object representing the Turtle
             file location.
 
     Returns:
         A `pathlib.Path` object representing a validated Turtle file.
 
     """
-    ttl_file = Path(ttl_file).resolve()
+    turtle_file = Path(turtle_file).resolve()
 
-    if not ttl_file.exists():
-        raise exceptions.TurtleFileNotFound(f"Supplied file {ttl_file} not found.")
+    if not turtle_file.exists():
+        raise exceptions.TurtleFileNotFound(f"Supplied file {turtle_file} not found.")
 
-    if not ttl_file.read_text(encoding="utf8"):
-        raise warnings.EmptyFile(f"The Turtle file {ttl_file} is empty.")
+    if not turtle_file.read_text(encoding="utf8"):
+        raise warnings.EmptyFile(f"The Turtle file {turtle_file} is empty.")
 
-    return ttl_file
+    return turtle_file
 
 
 def export_ontology(ontology: Graph, filename: Path) -> None:
@@ -67,9 +67,9 @@ def export_ontology(ontology: Graph, filename: Path) -> None:
         )
 
     with TemporaryDirectory() as tmp_dir:
-        tmp_ttl_file = Path(tmp_dir) / "tmp_ttl_file.ttl"
-        ontology.serialize(tmp_ttl_file, format="turtle")
-        canonized_ttl = tmp_ttl_file.read_text(encoding="utf8")
+        tmp_turtle_file = Path(tmp_dir) / "tmp_turtle_file.ttl"
+        ontology.serialize(tmp_turtle_file, format="turtle")
+        canonized_ttl = tmp_turtle_file.read_text(encoding="utf8")
 
     if not canonized_ttl:
         raise exceptions.FailedExportToFile(

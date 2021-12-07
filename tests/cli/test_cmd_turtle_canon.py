@@ -17,10 +17,10 @@ def test_version(clirunner: "CLIRunner") -> None:
     assert output.stdout == f"Turtle Canon version {__version__}\n"
 
 
-def test_absolute_path(clirunner: "CLIRunner", simple_ttl_file: Path) -> None:
+def test_absolute_path(clirunner: "CLIRunner", simple_turtle_file: Path) -> None:
     """Simple test run with minimalistic Turtle file."""
     output: "Union[CalledProcessError, CLIOutput, CompletedProcess]" = clirunner(
-        [str(simple_ttl_file)]
+        [str(simple_turtle_file)]
     )
 
     assert (
@@ -28,11 +28,11 @@ def test_absolute_path(clirunner: "CLIRunner", simple_ttl_file: Path) -> None:
     ), f"STDOUT: {output.stdout}\nSTDERR: {output.stderr}"
 
 
-def test_relative_path(clirunner: "CLIRunner", simple_ttl_file: Path) -> None:
+def test_relative_path(clirunner: "CLIRunner", simple_turtle_file: Path) -> None:
     """Simple test run with minimalistic Turtle file."""
-    relative_path = simple_ttl_file.relative_to("/tmp")
+    relative_path = simple_turtle_file.relative_to("/tmp")
     assert str(relative_path) == str(
-        Path(simple_ttl_file.parent.name) / simple_ttl_file.name
+        Path(simple_turtle_file.parent.name) / simple_turtle_file.name
     )
     assert not relative_path.is_absolute()
 

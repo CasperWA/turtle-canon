@@ -11,19 +11,19 @@ def top_dir() -> Path:
 
 
 @pytest.fixture
-def simple_ttl_file(top_dir: Path) -> Path:
+def simple_turtle_file(top_dir: Path) -> Path:
     """Load and return `Path` object to a simple Turtle file."""
     import os
     from shutil import copy
     from tempfile import TemporaryDirectory
 
-    ttl_file = top_dir / "tests" / "static" / "turtle_canon_tests.ttl"
+    turtle_file = top_dir / "tests" / "static" / "turtle_canon_tests.ttl"
     assert (
-        ttl_file.exists()
-    ), f"Test file {ttl_file.name} not found in {ttl_file.parent}!"
+        turtle_file.exists()
+    ), f"Test file {turtle_file.name} not found in {turtle_file.parent}!"
     tmpdir = TemporaryDirectory()
     try:
-        yield Path(copy(ttl_file, Path(tmpdir.name) / ttl_file.name))
+        yield Path(copy(turtle_file, Path(tmpdir.name) / turtle_file.name))
     finally:
         tmpdir.cleanup()
         assert not Path(
