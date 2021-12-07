@@ -22,8 +22,10 @@ def simple_ttl_file(top_dir: Path) -> Path:
         ttl_file.exists()
     ), f"Test file {ttl_file.name} not found in {ttl_file.parent}!"
     tmpdir = TemporaryDirectory()
-    yield Path(copy(ttl_file, Path(tmpdir.name) / ttl_file.name))
-    tmpdir.cleanup()
-    assert not Path(
-        tmpdir.name
-    ).exists(), f"Failed to remove temporary directory at {tmpdir.name}. Content:\n{os.listdir(tmpdir.name)}"
+    try:
+        yield Path(copy(ttl_file, Path(tmpdir.name) / ttl_file.name))
+    finally:
+        tmpdir.cleanup()
+        assert not Path(
+            tmpdir.name
+        ).exists(), f"Failed to remove temporary directory at {tmpdir.name}. Content:\n{os.listdir(tmpdir.name)}"
