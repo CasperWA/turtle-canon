@@ -95,3 +95,102 @@ def test_rdflib_consistency(top_dir: Path) -> None:
                 f"The canonized files when using RDFlib versions {rdflib_version} and "
                 f"{other_rdflib_version} are not the same !"
             )
+
+
+def test_extra_whitespace(simple_turtle_file: Path) -> None:
+    """Add random valid whitespace to a turtle file and ensure canonizing it doesn't
+    change."""
+    from random import randrange
+    from turtle_canon.canon import canonize
+
+    SPACE = " "
+
+    canonize(simple_turtle_file)
+    original_canonized_content = simple_turtle_file.read_text(encoding="utf8")
+
+    whitespaced_content_lines = original_canonized_content.splitlines()
+
+    assertion_fail_msg = "Failed after implementing the following changes:\n"
+    for number, change in enumerate(
+        (
+            "End-of-line whitespace",
+            "Extra empty lines",
+            "Extra empty lines full of whitespace",
+        )
+    ):
+        comment_start_line_number = comment_end_line_number = None
+        for index, line in enumerate(whitespaced_content_lines):
+            if 'rdfs:comment """Test ontology file.' in line:
+                comment_start_line_number = index
+            elif "owl:versionIRI" in line:
+                comment_end_line_number = index
+            if (
+                comment_start_line_number is not None
+                and comment_end_line_number is not None
+            ):
+                break
+        else:
+            if (
+                comment_start_line_number is not None
+                and comment_end_line_number is None
+            ):
+                msg = (
+                    "Could not find the 'owl:versionIRI' line in the test Turtle file"
+                    " !"
+                )
+            elif (
+                comment_start_line_number is None
+                and comment_end_line_number is not None
+            ):
+                msg = "Could not find the `rdfs:comment` line in the test Turtle file !"
+            else:
+                msg = (
+                    "Could neither find the 'rdfs:comment' line or the "
+                    "'owl:versionIRI' line in the test Turtle file !"
+                )
+            pytest.fail(msg)
+        comment_range_index = range(comment_start_line_number, comment_end_line_number)
+
+        random_line_number_cache = []
+        for _ in range(randrange(5, 10)):
+            random_line_number = randrange(0, len(whitespaced_content_lines))
+            while (
+                random_line_number in comment_range_index
+                or random_line_number in random_line_number_cache
+            ):
+                random_line_number = randrange(0, len(whitespaced_content_lines))
+            random_line_number_cache.append(random_line_number)
+
+            if change == "End-of-line whitespace":
+                whitespaced_content_lines[random_line_number] += (
+                    randrange(1, 20) * SPACE
+                )
+            elif change == "Extra empty lines":
+                whitespaced_content_lines.insert(random_line_number, "")
+                if random_line_number < comment_start_line_number:
+                    comment_start_line_number += 1
+                    comment_end_line_number += 1
+                    comment_range_index = range(
+                        comment_start_line_number, comment_end_line_number
+                    )
+            elif change == "Extra empty lines full of whitespace":
+                whitespaced_content_lines.insert(
+                    random_line_number, randrange(1, 20) * SPACE
+                )
+                if random_line_number < comment_start_line_number:
+                    comment_start_line_number += 1
+                    comment_end_line_number += 1
+                    comment_range_index = range(
+                        comment_start_line_number, comment_end_line_number
+                    )
+            else:
+                pytest.fail("Failure in spelling hard-coded change (descriptions) !")
+
+        assertion_fail_msg += f"  {number + 1}) {change}.\n"
+
+        changes = Path(simple_turtle_file.parent / f"changes_{number}.ttl")
+        changes.write_text("\n".join(whitespaced_content_lines) + "\n", encoding="utf8")
+        canonize(changes)
+        assert (
+            changes.read_text(encoding="utf8") == original_canonized_content
+        ), assertion_fail_msg
