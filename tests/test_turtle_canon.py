@@ -1,5 +1,9 @@
 """General tests for Turtle Canon."""
 from pathlib import Path
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from typing import List
 
 
 def test_repetitivity(simple_turtle_file: Path) -> None:
@@ -30,3 +34,18 @@ def test_repetitivity(simple_turtle_file: Path) -> None:
                     simple_turtle_file_content
                     == (Path(tmp_dir) / turtle_file_copy).read_text()
                 )
+
+
+def test_permutated_files(single_turtle_permutations: "List[Path]") -> None:
+    """Ensure firing the Turtle Canon for a single file with content permutations
+    renders the same result."""
+    from turtle_canon.canon import canonize
+
+    for turtle_file in single_turtle_permutations:
+        canonize(turtle_file)
+
+    for turtle_file in single_turtle_permutations:
+        for other_turtle_file in single_turtle_permutations:
+            if other_turtle_file == turtle_file:
+                continue
+            assert turtle_file.read_text() == other_turtle_file.read_text()
