@@ -51,7 +51,7 @@ def main(args: "List[str]" = None) -> None:
     args: "CLIArgs" = parser.parse_args(args)  # type: ignore[assignment]
 
     try:
-        canonize(ttl_file=args.TURTLE_FILE)
+        canonize(turtle_file=args.TURTLE_FILE)
     except TurtleCanonException as exception:
         print_error(exception, exit_after=True)
     except TurtleCanonWarning as warning:

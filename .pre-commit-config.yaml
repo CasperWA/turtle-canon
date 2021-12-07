@@ -10,11 +10,13 @@ repos:
     files: \.(xml|rdf|ttl)$
   - id: destroyed-symlinks
   - id: end-of-file-fixer
+    exclude: ^.*\.ttl$
   - id: requirements-txt-fixer
     name: Fix requirements*.txt
     files: ^requirements.*\.txt$
   - id: trailing-whitespace
     args: [--markdown-linebreak-ext=md]
+    exclude: ^.*\.ttl$
 
 - repo: https://github.com/ambv/black
   rev: 21.11b1
