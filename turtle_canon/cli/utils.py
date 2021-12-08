@@ -33,7 +33,7 @@ def print_error(message: "Union[str, Exception]", exit_after: bool = True) -> No
     """
     res = f"Misfire !\n\n{message}"
     if isinstance(message, Exception):
-        res = f"\n\nGeneral information about the exception: {message.__doc__}"
+        res += f"\n\nGeneral information about the exception: {message.__doc__}"
     _print_message(res, target=sys.stderr, prefix="ERROR: ")
     if exit_after:
         sys.exit(1)
