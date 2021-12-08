@@ -9,7 +9,7 @@ from rdflib import Graph
 from turtle_canon.utils import exceptions, warnings
 
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from typing import Union
 
 
