@@ -99,7 +99,7 @@ jobs:
         delete-branch: true
         title: Update dependencies
         body: ${{ steps.pr_body.outputs.result }}
-        labels: dependencies,CI,CD
+        labels: dependencies,CI/CD
 
     - name: Information
       run: 'echo "${{ steps.cpr.outputs.pull-request-operation }} PR #${{ steps.cpr.outputs.pull-request-number }}: ${{ steps.cpr.outputs.pull-request-url }}"'
