@@ -1,5 +1,6 @@
 # Coverage
 .coverage
+coverage.xml
 
 # Python
 .egg*

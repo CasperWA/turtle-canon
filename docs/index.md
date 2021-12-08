@@ -2,6 +2,9 @@
 
 *It's turtles all the way down.*
 
+![Codecov main](https://img.shields.io/codecov/c/github/CasperWA/turtle-canon/main)
+![CI main](https://github.com/CasperWA/turtle-canon/actions/workflows/ci_tests.yml/badge.svg?branch=main)
+
 A tool for canonizing Turtle (`.ttl`) ontology files.
 
 The domain standardized tool for editing and creating ontologies is [Protégé](https://protege.stanford.edu/).
