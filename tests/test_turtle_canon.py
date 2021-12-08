@@ -104,6 +104,10 @@ def test_extra_whitespace(simple_turtle_file: Path) -> None:
     from turtle_canon.canon import canonize
 
     SPACE = " "
+    multi_line_start_end = (
+        'rdfs:comment """Test ontology file.',
+        "owl:versionInfo",
+    )
 
     canonize(simple_turtle_file)
     original_canonized_content = simple_turtle_file.read_text(encoding="utf8")
@@ -120,9 +124,9 @@ def test_extra_whitespace(simple_turtle_file: Path) -> None:
     ):
         comment_start_line_number = comment_end_line_number = None
         for index, line in enumerate(whitespaced_content_lines):
-            if 'rdfs:comment """Test ontology file.' in line:
+            if multi_line_start_end[0] in line:
                 comment_start_line_number = index
-            elif "owl:versionIRI" in line:
+            elif multi_line_start_end[1] in line:
                 comment_end_line_number = index
             if (
                 comment_start_line_number is not None
@@ -135,20 +139,23 @@ def test_extra_whitespace(simple_turtle_file: Path) -> None:
                 and comment_end_line_number is None
             ):
                 msg = (
-                    "Could not find the 'owl:versionIRI' line in the test Turtle file"
-                    " !"
+                    f"Could not find the {multi_line_start_end[1]!r} line in the test "
+                    "Turtle file !"
                 )
             elif (
                 comment_start_line_number is None
                 and comment_end_line_number is not None
             ):
-                msg = "Could not find the `rdfs:comment` line in the test Turtle file !"
+                msg = (
+                    f"Could not find the {multi_line_start_end[0]!r} line in the test "
+                    "Turtle file !"
+                )
             else:
                 msg = (
-                    "Could neither find the 'rdfs:comment' line or the "
-                    "'owl:versionIRI' line in the test Turtle file !"
+                    f"Could neither find the {multi_line_start_end[0]!r} line or the "
+                    f"{multi_line_start_end[1]!r} line in the test Turtle file !"
                 )
-            pytest.fail(msg)
+            pytest.fail(msg + f"\n\nCanonized file:\n\n{original_canonized_content}")
         comment_range_index = range(comment_start_line_number, comment_end_line_number)
 
         random_line_number_cache = []

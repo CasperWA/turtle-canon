@@ -11,3 +11,11 @@ class TurtleFileNotFound(TurtleCanonException):
 
 class FailedExportToFile(TurtleCanonException):
     """Failed to export an ontology to file."""
+
+
+class FailedReadingFile(TurtleCanonException):
+    """Failed to read the content of a Turtle file using UTF-8 encoding."""
+
+
+class InconsistencyError(TurtleCanonException):
+    """An inconsistency was found."""
