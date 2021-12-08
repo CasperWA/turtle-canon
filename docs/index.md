@@ -2,8 +2,8 @@
 
 *It's turtles all the way down.*
 
-![Codecov main](https://img.shields.io/codecov/c/github/CasperWA/turtle-canon/main)
-![CI main](https://github.com/CasperWA/turtle-canon/actions/workflows/ci_tests.yml/badge.svg?branch=main)
+[![Codecov main](https://img.shields.io/codecov/c/github/CasperWA/turtle-canon/main)](https://app.codecov.io/gh/CasperWA/turtle-canon)
+[![CI main](https://github.com/CasperWA/turtle-canon/actions/workflows/ci_tests.yml/badge.svg?branch=main)](https://github.com/CasperWA/turtle-canon/actions/workflows/ci_tests.yml?query=branch%3Amain)
 
 A tool for canonizing Turtle (`.ttl`) ontology files.
 
