@@ -3,6 +3,7 @@
 import argparse
 import logging
 from pathlib import Path
+import sys
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -53,6 +54,7 @@ def main(args: "List[str]" = None) -> None:
     try:
         canonize(turtle_file=args.TURTLE_FILE)
     except TurtleCanonException as exception:
-        print_error(exception, exit_after=True)
+        print_error(exception)
     except TurtleCanonWarning as warning:
         print_warning(warning)
+    sys.exit()

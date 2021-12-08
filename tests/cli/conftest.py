@@ -135,9 +135,10 @@ def clirunner(request: "FixtureRequest") -> "CLIRunner":
                     output = CLIOutput(stdout_path.read_text(), stderr_path.read_text())
                 except SystemExit as exc:
                     output = CLIOutput(stdout_path.read_text(), stderr_path.read_text())
-                    if str(exc) != "0":
+                    if exc.code:
                         pytest.fail(
                             "The CLI call failed when it didn't expect to.\n"
+                            f"Exit code: {exc.code}\n"
                             f"STDOUT: {output.stdout}\nSTDERR: {output.stderr}"
                         )
                     return output

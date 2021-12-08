@@ -39,14 +39,17 @@ def print_error(message: "Union[str, Exception]", exit_after: bool = True) -> No
         sys.exit(1)
 
 
-def print_warning(message: "Union[str, Exception]") -> None:
+def print_warning(message: "Union[str, Exception]", exit_after: bool = False) -> None:
     """Print a warnings message to the console.
 
     Parameters:
         message: The warning message to print.
+        exit_after: Whether or not to call `sys.exit(1)` after printing the message.
 
     """
     res = f"Don't come too close !\n\n{message}"
     if isinstance(message, Exception):
         res += f"\n\nGeneral information about the warning: {message.__doc__}"
     _print_message(res, target=sys.stderr, prefix="WARNING: ")
+    if exit_after:
+        sys.exit(1)
