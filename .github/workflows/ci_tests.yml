@@ -96,7 +96,7 @@ jobs:
       with:
         name: turtle-canon
         files: ./coverage.xml
-        flags: pytest
+        flags: turtle-canon
 
   build-package:
     name: Build source distribution

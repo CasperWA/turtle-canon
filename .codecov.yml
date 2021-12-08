@@ -11,14 +11,10 @@ coverage:
   status:
     project:
       default: off
-      optimade:
+      turtle-canon:
         threshold: 1%
         flags:
-          - project
-      validator:
-        threshold: 1%
-        flags:
-          - validator
+          - turtle-canon
     patch:
       default:
         threshold: 5%
