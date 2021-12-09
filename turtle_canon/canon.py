@@ -85,8 +85,14 @@ def sort_ontology(turtle_file: Path) -> Graph:
             file.
 
     """
-    ontology = Graph().parse(location=str(turtle_file), format="turtle")
-    triples = sorted(ontology)
+    try:
+        ontology = Graph().parse(location=str(turtle_file), format="turtle")
+    except Exception as exc:
+        raise exceptions.FailedExportToFile(
+            f"Failed to properly parse the Turtle file at {turtle_file}"
+        ) from exc
+    else:
+        triples = sorted(ontology)
 
     if not triples:
         raise warnings.NoTriples(
@@ -96,8 +102,14 @@ def sort_ontology(turtle_file: Path) -> Graph:
     sorted_ontology = Graph(
         namespace_manager=ontology.namespace_manager, base=ontology.base
     )
-    for triple in triples:
-        sorted_ontology.add(triple)
+    try:
+        for triple in triples:
+            sorted_ontology.add(triple)
+    except Exception as exc:
+        raise exceptions.FailedExportToFile(
+            "Failed to properly create a sorted ontology from the triples in the "
+            f"Turtle file at {turtle_file}"
+        ) from exc
 
     if set(ontology) - set(sorted_ontology) or len(ontology) != len(sorted_ontology):
         raise exceptions.InconsistencyError(
