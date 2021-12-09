@@ -88,7 +88,7 @@ def sort_ontology(turtle_file: Path) -> Graph:
     try:
         ontology = Graph().parse(location=str(turtle_file), format="turtle")
     except Exception as exc:
-        raise exceptions.FailedExportToFile(
+        raise exceptions.FailedParsingFile(
             f"Failed to properly parse the Turtle file at {turtle_file}"
         ) from exc
     else:
@@ -106,7 +106,7 @@ def sort_ontology(turtle_file: Path) -> Graph:
         for triple in triples:
             sorted_ontology.add(triple)
     except Exception as exc:
-        raise exceptions.FailedExportToFile(
+        raise exceptions.FailedCreatingOntology(
             "Failed to properly create a sorted ontology from the triples in the "
             f"Turtle file at {turtle_file}"
         ) from exc

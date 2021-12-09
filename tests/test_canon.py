@@ -237,3 +237,30 @@ def test_sort_ontology_no_triples(tmp_dir: "Path") -> None:
         ),
     ):
         sort_ontology(empty_file)
+
+
+def test_sort_ontology_unparseable_file(tmp_dir: "Path") -> None:
+    """Ensure exceptions from RDFlib during parsing an unparseable Turtle file are
+    wrapped as Turtle Canon exceptions."""
+    import os
+
+    from turtle_canon.canon import sort_ontology
+    from turtle_canon.utils.exceptions import FailedParsingFile
+
+    unparseable_file = tmp_dir / "unparseable_file.ttl"
+    unparseable_file.write_text("test")
+
+    try:
+        os.chmod(unparseable_file, 0o000)  # none
+
+        with pytest.raises(
+            FailedParsingFile,
+            match=(
+                "Failed to properly parse the Turtle file at "
+                f"{unparseable_file.absolute()}"
+            ),
+        ):
+            sort_ontology(unparseable_file)
+    finally:
+        os.chmod(unparseable_file, 0o644)
+        assert unparseable_file.read_text()

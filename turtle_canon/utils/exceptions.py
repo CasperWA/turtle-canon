@@ -19,3 +19,11 @@ class FailedReadingFile(TurtleCanonException):
 
 class InconsistencyError(TurtleCanonException):
     """An inconsistency was found."""
+
+
+class FailedParsingFile(TurtleCanonException):
+    """RDFlib failed parsing a Turtle file."""
+
+
+class FailedCreatingOntology(TurtleCanonException):
+    """RDFlib failed to add one or more triples to a new `rdflib.Graph` object."""
