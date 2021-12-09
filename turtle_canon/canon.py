@@ -9,7 +9,7 @@ from rdflib import Graph
 from turtle_canon.utils import exceptions, warnings
 
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from typing import Union
 
 
@@ -17,10 +17,14 @@ def canonize(turtle_file: "Union[Path, str]") -> None:
     """The main function for running `turtle-canon`.
 
     Workflow:
-    - Load Turtle file.
-    - Read Turtle file.
-    - Instantiate EMMOntoPy Ontology from Turtle file.
-    - Export Ontology as Turtle file (overwriting loaded Turtle file as default).
+    - **Validate** Turtle file.
+      Check the file integrity, readability, writeability and content.
+    - **Parse** and **sort** Turtle file's triples.
+      Parse Turtle file using RDFlib.
+      Retrieve triples, sort them, and generate a new RDFlib `Graph` from the sorted
+      triples.
+    - **Export** ontology as Turtle file.
+      Overwriting loaded Turtle file, i.e., overall the canonization is done in-place.
 
     Parameters:
         turtle_file: An absolute path or `pathlib.Path` object representing the Turtle
@@ -28,8 +32,8 @@ def canonize(turtle_file: "Union[Path, str]") -> None:
 
     """
     valid_turtle_file = validate_turtle(turtle_file)
-    loaded_ontology = Graph().parse(location=str(turtle_file), format="turtle")
-    export_ontology(loaded_ontology, valid_turtle_file)
+    sorted_ontology = sort_ontology(valid_turtle_file)
+    export_ontology(sorted_ontology, valid_turtle_file)
 
 
 def validate_turtle(turtle_file: "Union[Path, str]") -> Path:
@@ -48,10 +52,72 @@ def validate_turtle(turtle_file: "Union[Path, str]") -> Path:
     if not turtle_file.exists():
         raise exceptions.TurtleFileNotFound(f"Supplied file {turtle_file} not found.")
 
-    if not turtle_file.read_text(encoding="utf8"):
+    try:
+        content = turtle_file.read_text(encoding="utf8")
+    except (OSError, UnicodeDecodeError) as exc:
+        raise exceptions.FailedReadingFile(
+            f"The Turtle file {turtle_file} could not be opened and read (using UTF-8 "
+            "encoding)."
+        ) from exc
+
+    try:
+        turtle_file.write_text(content, encoding="utf8")
+    except (OSError, UnicodeDecodeError) as exc:
+        raise exceptions.FailedReadingFile(
+            f"The Turtle file {turtle_file} could not be opened and written to (using "
+            "UTF-8 encoding)."
+        ) from exc
+
+    if not content:
         raise warnings.EmptyFile(f"The Turtle file {turtle_file} is empty.")
 
     return turtle_file
+
+
+def sort_ontology(turtle_file: Path) -> Graph:
+    """Load and sort triples in ontology.
+
+    A validated Turtle file is expected, hence there are no "unnecessary" sanity checks
+    in this function.
+
+    Parameters:
+        turtle_file: A valid `pathlib.Path` object representing the (unsorted) Turtle
+            file.
+
+    """
+    try:
+        ontology = Graph().parse(location=str(turtle_file), format="turtle")
+    except Exception as exc:
+        raise exceptions.FailedParsingFile(
+            f"Failed to properly parse the Turtle file at {turtle_file}"
+        ) from exc
+    else:
+        triples = sorted(ontology)
+
+    if not triples:
+        raise warnings.NoTriples(
+            f"No triples found in the parsed non-empty Turtle file at {turtle_file}"
+        )
+
+    sorted_ontology = Graph(
+        namespace_manager=ontology.namespace_manager, base=ontology.base
+    )
+    try:
+        for triple in triples:
+            sorted_ontology.add(triple)
+    except Exception as exc:
+        raise exceptions.FailedCreatingOntology(
+            "Failed to properly create a sorted ontology from the triples in the "
+            f"Turtle file at {turtle_file}"
+        ) from exc
+
+    if set(ontology) - set(sorted_ontology) or len(ontology) != len(sorted_ontology):
+        raise exceptions.InconsistencyError(
+            f"After sorting the ontology triples from the Turtle file at {turtle_file}"
+            " and re-creating the ontology, inconsistencies were found !"
+        )
+
+    return sorted_ontology
 
 
 def export_ontology(ontology: Graph, filename: Path) -> None:

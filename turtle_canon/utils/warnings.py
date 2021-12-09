@@ -13,3 +13,7 @@ class TurtleCanonWarning(Exception):
 
 class EmptyFile(TurtleCanonWarning):
     """A file's content is empty."""
+
+
+class NoTriples(TurtleCanonWarning):
+    """No triples found in the parsed ontology."""

@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-CLIOutput = namedtuple("CLIOutput", ["stdout", "stderr"])
+CLIOutput = namedtuple("CLIOutput", ["stdout", "stderr", "returncode"])
 
 if TYPE_CHECKING:
     from subprocess import CalledProcessError, CompletedProcess
@@ -132,38 +132,48 @@ def clirunner(request: "FixtureRequest") -> "CLIRunner":
                     ) as stderr:
                         with redirect_stdout(stdout), redirect_stderr(stderr):
                             cli(options if options else None)
-                    output = CLIOutput(stdout_path.read_text(), stderr_path.read_text())
-                except SystemExit as exc:
-                    output = CLIOutput(stdout_path.read_text(), stderr_path.read_text())
-                    if str(exc) != "0":
-                        pytest.fail(
-                            "The CLI call failed when it didn't expect to.\n"
-                            f"STDOUT: {output.stdout}\nSTDERR: {output.stderr}"
-                        )
-                    return output
-                except Exception:  # pylint: disable=broad-except
-                    output = CLIOutput(stdout_path.read_text(), stderr_path.read_text())
-                    if expected_error:
-                        if (
-                            expected_error in output.stdout
-                            or expected_error in output.stderr
-                        ):
-                            # Expected error, found expected sub-string as well.
-                            return output
+                except SystemExit as exit_:
+                    output = CLIOutput(
+                        stdout_path.read_text(),
+                        stderr_path.read_text(),
+                        exit_.code or 0,
+                    )
 
-                        pytest.fail(
-                            "The CLI call failed as expected, but the expected "
-                            "error sub-string could not be found in stdout or "
-                            f"stderr. Sub-string: {expected_error}\nSTDOUT: "
-                            f"{output.stdout}\nSTDERR: {output.stderr}"
-                        )
+                    if exit_.code:
+                        # Not a 0 (successful) exit
+                        if expected_error:
+                            if (
+                                expected_error in output.stdout
+                                or expected_error in output.stderr
+                            ):
+                                # Expected error, found expected sub-string as well.
+                                return output
+
+                            pytest.fail(
+                                "The CLI call failed as expected, but the expected "
+                                "error sub-string could not be found in stdout or "
+                                f"stderr. Sub-string: {expected_error}\nSTDOUT: "
+                                f"{output.stdout}\nSTDERR: {output.stderr}\n"
+                                f"Exception: {exit_!r}"
+                            )
+                        else:
+                            pytest.fail(
+                                "The CLI call failed when it didn't expect to.\n"
+                                f"Exit code: {output.returncode}\n"
+                                f"STDOUT: {output.stdout}\nSTDERR: {output.stderr}"
+                                f"\nException: {exit_!r}"
+                            )
                     else:
-                        pytest.fail(
-                            "The CLI call failed when it didn't expect to.\n"
-                            f"STDOUT: {output.stdout}\nSTDERR: {output.stderr}"
-                        )
+                        if expected_error:
+                            pytest.fail(
+                                "Expected the CLI call to fail with an error "
+                                f"containing the sub-string: {expected_error}"
+                            )
+                        return output
                 else:
-                    return output
+                    pytest.fail(
+                        "SystemExit should be raised from the CLI, but wasn't !"
+                    )
                 finally:
                     os.chdir(original_cwd)
                     if isinstance(run_dir, TemporaryDirectory):
