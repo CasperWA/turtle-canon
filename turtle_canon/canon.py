@@ -99,7 +99,7 @@ def sort_ontology(turtle_file: Path) -> Graph:
     for triple in triples:
         sorted_ontology.add(triple)
 
-    if set(ontology) - set(sorted_ontology):
+    if set(ontology) - set(sorted_ontology) or len(ontology) != len(sorted_ontology):
         raise exceptions.InconsistencyError(
             f"After sorting the ontology triples from the Turtle file at {turtle_file}"
             " and re-creating the ontology, inconsistencies were found !"

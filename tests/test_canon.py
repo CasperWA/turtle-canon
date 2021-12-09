@@ -194,10 +194,46 @@ def test_validate_turtle_no_w_file(tmp_dir: "Path") -> None:
 
         with pytest.raises(
             FailedReadingFile,
-            match=f"The Turtle file {no_w_file.absolute()} could not be opened and written to \(using UTF-8 encoding\).",
+            match=(
+                f"The Turtle file {no_w_file.absolute()} could not be opened and "
+                "written to \(using UTF-8 encoding\)."
+            ),
         ):
             validate_turtle(str(no_w_file))
     finally:
         os.chmod(no_w_file, 0o644)
         assert no_w_file.read_text()
         assert no_w_file.write_text("test again")
+
+
+def test_sort_ontology(simple_turtle_file: "Path") -> None:
+    """Test `sort_ontology()` runs."""
+    from rdflib import Graph
+
+    from turtle_canon.canon import sort_ontology
+
+    ontology = sort_ontology(simple_turtle_file)
+    assert isinstance(ontology, Graph)
+
+
+def test_sort_ontology_no_triples(tmp_dir: "Path") -> None:
+    """Ensure a warning is raised (as an exception) if there are no triples.
+
+    While the Turtle file in this test _is_ empty, this is not checked in
+    `sort_ontology()`, since a "validated" Turtle file is expected (where this is
+    checked).
+    """
+    from turtle_canon.canon import sort_ontology
+    from turtle_canon.utils.warnings import NoTriples
+
+    empty_file = tmp_dir / "empty_file.ttl"
+    empty_file.write_text("\n")
+
+    with pytest.raises(
+        NoTriples,
+        match=(
+            "No triples found in the parsed non-empty Turtle file at "
+            f"{empty_file.absolute()}"
+        ),
+    ):
+        sort_ontology(empty_file)
