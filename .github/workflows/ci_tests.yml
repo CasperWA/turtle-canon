@@ -178,3 +178,6 @@ jobs:
           echo "Turtle Canon canonized already canonized files under tests/static/rdflib_canonized !"
           exit 1
         fi
+
+        # Now everything should run fine
+        pre-commit run -c .github/utils/.pre-commit-config.yaml --all-files
