@@ -136,7 +136,7 @@ def print_summary(
             if isinstance(warning, Exception):
                 res += f"  General info: {warning.__doc__}\n"
 
-    _print_message(res, target=target, prefix="", exit_after=exit_after)
+    _print_message(res[:-1], target=target, prefix="", exit_after=exit_after)
 
 
 def print_changed_files(
