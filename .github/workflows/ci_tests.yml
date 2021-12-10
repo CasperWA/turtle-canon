@@ -103,11 +103,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+    - name: Checkout repository
+      uses: actions/checkout@v2
 
-      - name: Check build and install source distribution
-        uses: CasperWA/check-sdist-action@v1
+    - name: Check build and install source distribution
+      uses: CasperWA/check-sdist-action@v1
 
   docs:
     name: Documentation
@@ -135,3 +135,46 @@ jobs:
         invoke create-api-reference-docs --pre-clean
         invoke create-docs-index
         mkdocs build --strict --verbose
+
+  as-pre-commit-hook:
+    name: As a pre-commit hook
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.9
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -U setuptools wheel
+
+        while IFS="" read -r line || [ -n "${line}" ]; do
+            if [[ "${line}" =~ ^pre-commit.*$ ]]; then
+                pre_commit="${line}"
+            fi
+        done < requirements_dev.txt
+
+        pip install ${pre_commit}
+
+    - name: Set 'rev' to current commit SHA
+      run: sed -i "s|COMMIT_SHA|${GITHUB_SHA}|" .github/utils/.pre-commit-config.yaml
+
+    - name: Test pre-commit hook
+      run: pre-commit run -c .github/utils/.pre-commit-config.yaml --all-files --verbose
+
+    - name: Check files
+      run: |
+        if [ -z "$(git status --porcelain tests)" ]; then
+          echo "Turtle Canon didn't canonize any files under tests/ !"
+          exit 1
+        fi
+        if [ -n "$(git status --porcelain tests/static/rdflib_canonized)" ]; then
+          echo "Turtle Canon canonized already canonized files under tests/static/rdflib_canonized !"
+          exit 1
+        fi
