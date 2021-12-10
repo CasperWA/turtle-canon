@@ -2,7 +2,8 @@
   name: Turtle Canon
   description: "Turtle Canon: A tool for canonizing Turtle (`.ttl`) ontology files."
   entry: turtle-canon
-  language: python3.9
+  language: python
+  language_version: python3.9
   minimum_pre_commit_version: 1.13.0
   require_serial: true
   files: \.ttl$
