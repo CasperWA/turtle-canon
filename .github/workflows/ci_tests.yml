@@ -166,7 +166,7 @@ jobs:
       run: sed -i "s|COMMIT_SHA|${GITHUB_SHA}|" .github/utils/.pre-commit-config.yaml
 
     - name: Test pre-commit hook
-      run: pre-commit run -c .github/utils/.pre-commit-config.yaml --all-files --verbose
+      run: pre-commit run -c .github/utils/.pre-commit-config.yaml --all-files --verbose && exit 1 || exit 0
 
     - name: Check files
       run: |
