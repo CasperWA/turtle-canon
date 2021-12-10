@@ -7,10 +7,18 @@ import sys
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
-    from collections import namedtuple
+    from dataclasses import dataclass
     from typing import List
 
-    CLIArgs = namedtuple("CLIArgs", ["version", "log_level", "TURTLE_FILE"])
+    @dataclass
+    class CLIArgs:
+        """CLI parsed arguments"""
+
+        version: str
+        log_level: str
+        fail_fast: bool
+        turtle_files: List[Path]
+
 
 LOGGING_LEVELS = [logging.getLevelName(level).lower() for level in range(0, 51, 10)]
 
@@ -19,7 +27,7 @@ def main(args: "List[str]" = None) -> None:
     """Turtle Canon - It's turtles all the way down."""
     from turtle_canon import __version__
     from turtle_canon.canon import canonize
-    from turtle_canon.cli.utils import print_error, print_warning
+    from turtle_canon.cli.utils import print_error, print_summary, print_warning
     from turtle_canon.utils.exceptions import TurtleCanonException
     from turtle_canon.utils.warnings import TurtleCanonWarning
 
@@ -41,20 +49,51 @@ def main(args: "List[str]" = None) -> None:
         default="info",
     )
     parser.add_argument(
-        "TURTLE_FILE",
+        "--fail-fast",
+        action="store_true",
+        help=(
+            "Exit the canonization immediately if an error occurs. E.g., if multiple "
+            "files are given, Turtle Canon will exit immediately if an error occurs "
+            "when canonization a single file. Otherwise, all files will be attempted "
+            "to be canonized, and a summary will be printed at the end."
+        ),
+    )
+    parser.add_argument(
+        "turtle_files",
+        action="extend",
+        nargs="+",
         type=Path,
         help=(
             "Path to the Turtle file. Can be relative or absolute. Example: "
             "'../my_ontology.ttl'."
         ),
+        metavar="TURTLE_FILE",
     )
 
     args: "CLIArgs" = parser.parse_args(args)  # type: ignore[assignment]
 
-    try:
-        canonize(turtle_file=args.TURTLE_FILE)
-    except TurtleCanonException as exception:
-        print_error(exception)
-    except TurtleCanonWarning as warning:
-        print_warning(warning)
+    errors = []
+    warnings = []
+
+    number_of_turtle_files = len(args.turtle_files)
+
+    while args.turtle_files:
+        turtle_file = args.turtle_files.pop()
+        try:
+            canonize(turtle_file)
+        except TurtleCanonException as exception:
+            if args.fail_fast:
+                print_error(exception)
+            else:
+                errors.append(exception)
+        except TurtleCanonWarning as warning:
+            if number_of_turtle_files == 1:
+                print_warning(warning)
+            warnings.append(warning)
+
+    if number_of_turtle_files == 1 and warnings:
+        pass
+    else:
+        print_summary(errors=errors, warnings=warnings)
+
     sys.exit()
