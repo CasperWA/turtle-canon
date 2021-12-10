@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from subprocess import CalledProcessError, CompletedProcess
-    from typing import Union
+    from typing import List, Union
 
     from .conftest import CLIOutput, CLIRunner
 
@@ -97,3 +97,19 @@ def test_empty_file(clirunner: "CLIRunner", tmp_dir: Path) -> None:
     ), assertion_help
     assert output.returncode == 0
     assert "WARNING" in output.stderr, assertion_help
+
+
+def test_multiple_files(
+    clirunner: "CLIRunner", single_turtle_permutations: "List[Path]"
+) -> None:
+    """Ensure passing multiple files to the CLI works."""
+    output: "CLIRunnerOutput" = clirunner([str(_) for _ in single_turtle_permutations])
+
+    assertion_help = (
+        f"STDOUT: {output.stdout}\nSTDERR: {output.stderr}\nRETURN_CODE: "
+        f"{output.returncode}"
+    )
+
+    assert not output.stderr, assertion_help
+    assert not output.stderr, assertion_help
+    assert output.returncode == 0

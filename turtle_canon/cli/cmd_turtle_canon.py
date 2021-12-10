@@ -42,6 +42,8 @@ def main(args: "List[str]" = None) -> None:
     )
     parser.add_argument(
         "TURTLE_FILE",
+        action="extend",
+        nargs="+",
         type=Path,
         help=(
             "Path to the Turtle file. Can be relative or absolute. Example: "
@@ -52,7 +54,8 @@ def main(args: "List[str]" = None) -> None:
     args: "CLIArgs" = parser.parse_args(args)  # type: ignore[assignment]
 
     try:
-        canonize(turtle_file=args.TURTLE_FILE)
+        for turtle_file in args.TURTLE_FILE:
+            canonize(turtle_file)
     except TurtleCanonException as exception:
         print_error(exception)
     except TurtleCanonWarning as warning:
