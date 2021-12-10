@@ -1,6 +1,7 @@
 # Turtle Canon
 
-*It's turtles all the way down.*
+<!-- markdownlint-disable-next-line MD036 -->
+*It's turtles all the way down*
 
 [![Codecov main](https://img.shields.io/codecov/c/github/CasperWA/turtle-canon/main)](https://app.codecov.io/gh/CasperWA/turtle-canon)
 [![CI main](https://github.com/CasperWA/turtle-canon/actions/workflows/ci_tests.yml/badge.svg?branch=main)](https://github.com/CasperWA/turtle-canon/actions/workflows/ci_tests.yml?query=branch%3Amain)
@@ -15,7 +16,7 @@ The main use case for developing this tool is when developing ontologies utilizi
 
 ## Install
 
-The tool is written in Python 3.9, so one needs a Python 3.9 interpreter to run it at this stage.
+The tool is written for Python 3.9, so one needs at minimum Python 3.9 installed to run it at this stage.
 The plan is to make a stand-alone executable for each of the major OS'.
 
 Install via PyPI (stable version, recommended):

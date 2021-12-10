@@ -201,3 +201,26 @@ def test_extra_whitespace(simple_turtle_file: Path) -> None:
         assert (
             changes.read_text(encoding="utf8") == original_canonized_content
         ), assertion_fail_msg
+
+
+def test_different_sources(different_sources_ontologies: "List[Path]") -> None:
+    """Test that the canonization is true only to the given set of triples."""
+    import re
+
+    from turtle_canon.canon import canonize
+
+    source_regex = r"^turtle_canon_tests_(?P<source>.*)\.ttl$"
+
+    for turtle_file in different_sources_ontologies:
+        source_match = re.match(source_regex, turtle_file.name)
+        if source_match:
+            source = source_match.group("source")
+        else:
+            pytest.fail(f"Couldn't determine source from {turtle_file.name!r} !")
+
+        try:
+            canonize(turtle_file)
+        except Exception as exc:
+            pytest.fail(
+                f"Failed canonizing file from source {source}.\n\nException:\n{exc}"
+            )

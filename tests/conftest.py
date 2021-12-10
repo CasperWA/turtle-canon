@@ -77,3 +77,32 @@ def tmp_dir() -> Path:
             f"Failed to remove temporary directory at {tmpdir.name}. "
             f"Content:\n{os.listdir(tmpdir.name)}"
         )
+
+
+@pytest.fixture
+def different_sources_ontologies(top_dir: Path) -> "List[Path]":
+    """Yield list of Turtle files generated using different tools, i.e., coming from
+    different sources."""
+    import os
+    from shutil import copy
+    from tempfile import TemporaryDirectory
+
+    turtle_files = list(
+        (top_dir / "tests" / "static" / "different_sources").glob(
+            "turtle_canon_tests*.ttl"
+        )
+    )
+    tmpdir = TemporaryDirectory()
+    tmpdir_path = Path(tmpdir.name)
+    try:
+        res = []
+        for turtle_file in turtle_files:
+            copy(turtle_file, tmpdir_path / turtle_file.name)
+            res.append(tmpdir_path / turtle_file.name)
+        yield res
+    finally:
+        tmpdir.cleanup()
+        assert not Path(tmpdir.name).exists(), (
+            f"Failed to remove temporary directory at {tmpdir.name}. "
+            f"Content:\n{os.listdir(tmpdir.name)}"
+        )

@@ -1,0 +1,214 @@
+@prefix : <http://emmo.info/emmo/domain/onto#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix core: <http://www.w3.org/2004/02/skos/core#> .
+@prefix emmo: <http://emmo.info/emmo#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix term: <http://purl.org/dc/terms/> .
+@base <http://emmo.info/emmo/domain/onto> .
+
+<http://emmo.info/emmo/domain/onto> rdf:type owl:Ontology ;
+                                     owl:imports <https://raw.githubusercontent.com/emmo-repo/emmo-repo.github.io/master/versions/1.0.0-beta/emmo-inferred-chemistry> ;
+                                     term:creator "Astrid Marthinsen"@en ,
+                                                  "Georg Schmidt"@en ,
+                                                  "Jesper Friis"@en ,
+                                                  "Sylvain Gouttebroze"@en ,
+                                                  "Tomas Manik"@en ,
+                                                  "Ulrike Cihak-Bayr"@en .
+
+#################################################################
+#    Annotation properties
+#################################################################
+
+###  http://emmo.info/emmo#EMMO_967080e5_2f42_4eb2_a3a9_c58143e835f9
+emmo:EMMO_967080e5_2f42_4eb2_a3a9_c58143e835f9 rdf:type owl:AnnotationProperty .
+
+
+###  http://emmo.info/emmo#EMMO_b432d2d5_25f4_4165_99c5_5935a7763c1a
+emmo:EMMO_b432d2d5_25f4_4165_99c5_5935a7763c1a rdf:type owl:AnnotationProperty .
+
+
+###  http://purl.org/dc/terms/creator
+term:creator rdf:type owl:AnnotationProperty .
+
+
+###  http://www.w3.org/2004/02/skos/core#prefLabel
+core:prefLabel rdf:type owl:AnnotationProperty .
+
+
+#################################################################
+#    Object Properties
+#################################################################
+
+###  http://emmo.info/emmo#EMMO_17e27c22_37e1_468c_9dd7_95e137f73e7f
+emmo:EMMO_17e27c22_37e1_468c_9dd7_95e137f73e7f rdf:type owl:ObjectProperty .
+
+
+###  http://emmo.info/emmo#EMMO_e1097637_70d2_4895_973f_2396f04fa204
+emmo:EMMO_e1097637_70d2_4895_973f_2396f04fa204 rdf:type owl:ObjectProperty .
+
+
+#################################################################
+#    Classes
+#################################################################
+
+###  http://emmo.info/emmo#EMMO_21f56795_ee72_4858_b571_11cfaa59c1a8
+emmo:EMMO_21f56795_ee72_4858_b571_11cfaa59c1a8 rdf:type owl:Class .
+
+
+###  http://emmo.info/emmo#EMMO_649bf97b_4397_4005_90d9_219755d92e34
+emmo:EMMO_649bf97b_4397_4005_90d9_219755d92e34 rdf:type owl:Class .
+
+
+###  http://emmo.info/emmo#EMMO_802d3e92_8770_4f98_a289_ccaaab7fdddf
+emmo:EMMO_802d3e92_8770_4f98_a289_ccaaab7fdddf rdf:type owl:Class .
+
+
+###  http://emmo.info/emmo#EMMO_d4f7d378_5e3b_468a_baa1_a7e98358cda7
+emmo:EMMO_d4f7d378_5e3b_468a_baa1_a7e98358cda7 rdf:type owl:Class .
+
+
+###  http://emmo.info/emmo#EMMO_f1a51559_aa3d_43a0_9327_918039f0dfed
+emmo:EMMO_f1a51559_aa3d_43a0_9327_918039f0dfed rdf:type owl:Class .
+
+
+###  http://emmo.info/emmo/domain/onto#EMMO_0264be35-e8ad-5b35-a1a3-84b37bde22d1
+:EMMO_0264be35-e8ad-5b35-a1a3-84b37bde22d1 rdf:type owl:Class ;
+                                           rdfs:subClassOf :EMMO_138590b8-3333-515d-87ab-717aac8434e6 ,
+                                                           :EMMO_4b32833e-0833-56a7-903c-28a6a8191fe8 ,
+                                                           [ rdf:type owl:Restriction ;
+                                                             owl:onProperty emmo:EMMO_17e27c22_37e1_468c_9dd7_95e137f73e7f ;
+                                                             owl:someValuesFrom :EMMO_b41c9cb3-3b2d-509f-9c93-aa04da134307
+                                                           ] ,
+                                                           [ rdf:type owl:Restriction ;
+                                                             owl:onProperty emmo:EMMO_e1097637_70d2_4895_973f_2396f04fa204 ;
+                                                             owl:someValuesFrom emmo:EMMO_d4f7d378_5e3b_468a_baa1_a7e98358cda7
+                                                           ] ;
+                                           emmo:EMMO_967080e5_2f42_4eb2_a3a9_c58143e835f9 "Temporal pattern occurring in a time interval"@en ;
+                                           emmo:EMMO_b432d2d5_25f4_4165_99c5_5935a7763c1a "Light house during one night"@en ;
+                                           core:prefLabel "FiniteTemporalPattern"@en .
+
+
+###  http://emmo.info/emmo/domain/onto#EMMO_138590b8-3333-515d-87ab-717aac8434e6
+:EMMO_138590b8-3333-515d-87ab-717aac8434e6 rdf:type owl:Class ;
+                                           rdfs:subClassOf :EMMO_9fa9ca88-2891-538a-a8dd-ccb8a08b9890 ;
+                                           emmo:EMMO_967080e5_2f42_4eb2_a3a9_c58143e835f9 "Pattern with only temporal aspect"@en ;
+                                           emmo:EMMO_b432d2d5_25f4_4165_99c5_5935a7763c1a "Voltage in AC plug"@en ;
+                                           core:prefLabel "TemporalPattern"@en .
+
+
+###  http://emmo.info/emmo/domain/onto#EMMO_1b2bfe71-5da9-5c46-b137-be45c3e3f9c3
+:EMMO_1b2bfe71-5da9-5c46-b137-be45c3e3f9c3 rdf:type owl:Class ;
+                                           rdfs:subClassOf emmo:EMMO_649bf97b_4397_4005_90d9_219755d92e34 ;
+                                           emmo:EMMO_967080e5_2f42_4eb2_a3a9_c58143e835f9 "NEED elucidation"@en ;
+                                           core:prefLabel "Boundary"@en .
+
+
+###  http://emmo.info/emmo/domain/onto#EMMO_472ed27e-ce08-53cb-8453-56ab363275c4
+:EMMO_472ed27e-ce08-53cb-8453-56ab363275c4 rdf:type owl:Class ;
+                                           rdfs:subClassOf :EMMO_1b2bfe71-5da9-5c46-b137-be45c3e3f9c3 ;
+                                           emmo:EMMO_967080e5_2f42_4eb2_a3a9_c58143e835f9 "NEED elucidation"@en ;
+                                           core:prefLabel "SpatialBoundary"@en .
+
+
+###  http://emmo.info/emmo/domain/onto#EMMO_4b32833e-0833-56a7-903c-28a6a8191fe8
+:EMMO_4b32833e-0833-56a7-903c-28a6a8191fe8 rdf:type owl:Class ;
+                                           rdfs:subClassOf :EMMO_cd254842-c697-55f6-917d-9805c77b9187 ,
+                                                           [ rdf:type owl:Restriction ;
+                                                             owl:onProperty emmo:EMMO_17e27c22_37e1_468c_9dd7_95e137f73e7f ;
+                                                             owl:someValuesFrom :EMMO_1b2bfe71-5da9-5c46-b137-be45c3e3f9c3
+                                                           ] ;
+                                           emmo:EMMO_967080e5_2f42_4eb2_a3a9_c58143e835f9 "Pattern occuring within a boundary in the 4D space"@en ;
+                                           rdfs:comment "Every physical patterns are FinitePattern"@en ;
+                                           core:prefLabel "FinitePattern"@en .
+
+
+###  http://emmo.info/emmo/domain/onto#EMMO_5f50f77e-f321-53e3-af76-fe5b0a347479
+:EMMO_5f50f77e-f321-53e3-af76-fe5b0a347479 rdf:type owl:Class ;
+                                           rdfs:subClassOf :EMMO_9fa9ca88-2891-538a-a8dd-ccb8a08b9890 ;
+                                           emmo:EMMO_967080e5_2f42_4eb2_a3a9_c58143e835f9 "Spatial pattern without regular temporal variations"@en ;
+                                           emmo:EMMO_b432d2d5_25f4_4165_99c5_5935a7763c1a "Infinite grid"@en ;
+                                           core:prefLabel "SpatialPattern"@en .
+
+
+###  http://emmo.info/emmo/domain/onto#EMMO_70269d17-fbaa-54a6-8905-ce4dee45e0dd
+:EMMO_70269d17-fbaa-54a6-8905-ce4dee45e0dd rdf:type owl:Class ;
+                                           rdfs:subClassOf emmo:EMMO_802d3e92_8770_4f98_a289_ccaaab7fdddf ;
+                                           core:prefLabel "Particle"@en .
+
+
+###  http://emmo.info/emmo/domain/onto#EMMO_76b2eb15-3ab7-52b3-ade2-755aa390d63e
+:EMMO_76b2eb15-3ab7-52b3-ade2-755aa390d63e rdf:type owl:Class ;
+                                           rdfs:subClassOf :EMMO_4b32833e-0833-56a7-903c-28a6a8191fe8 ,
+                                                           :EMMO_5f50f77e-f321-53e3-af76-fe5b0a347479 ,
+                                                           [ rdf:type owl:Restriction ;
+                                                             owl:onProperty emmo:EMMO_17e27c22_37e1_468c_9dd7_95e137f73e7f ;
+                                                             owl:someValuesFrom :EMMO_472ed27e-ce08-53cb-8453-56ab363275c4
+                                                           ] ,
+                                                           [ rdf:type owl:Restriction ;
+                                                             owl:onProperty emmo:EMMO_e1097637_70d2_4895_973f_2396f04fa204 ;
+                                                             owl:someValuesFrom emmo:EMMO_f1a51559_aa3d_43a0_9327_918039f0dfed
+                                                           ] ;
+                                           emmo:EMMO_967080e5_2f42_4eb2_a3a9_c58143e835f9 "Spatial pattern localized in a volume of space"@en ;
+                                           emmo:EMMO_b432d2d5_25f4_4165_99c5_5935a7763c1a "Textured surface after etching"@en ;
+                                           core:prefLabel "FiniteSpatialPattern"@en .
+
+
+###  http://emmo.info/emmo/domain/onto#EMMO_903bf818-c0b4-56ef-9673-799ba204795d
+:EMMO_903bf818-c0b4-56ef-9673-799ba204795d rdf:type owl:Class ;
+                                           rdfs:subClassOf emmo:EMMO_802d3e92_8770_4f98_a289_ccaaab7fdddf ;
+                                           core:prefLabel "Precipitate"@en .
+
+
+###  http://emmo.info/emmo/domain/onto#EMMO_9fa9ca88-2891-538a-a8dd-ccb8a08b9890
+:EMMO_9fa9ca88-2891-538a-a8dd-ccb8a08b9890 rdf:type owl:Class ;
+                                           rdfs:subClassOf :EMMO_cd254842-c697-55f6-917d-9805c77b9187 ;
+                                           emmo:EMMO_967080e5_2f42_4eb2_a3a9_c58143e835f9 "NEED elucidation"@en ;
+                                           core:prefLabel "SpatioTemporalPattern"@en .
+
+
+###  http://emmo.info/emmo/domain/onto#EMMO_b04965e6-a9bb-591f-8f8a-1adcb2c8dc39
+:EMMO_b04965e6-a9bb-591f-8f8a-1adcb2c8dc39 rdf:type owl:Class ;
+                                           rdfs:subClassOf emmo:EMMO_21f56795_ee72_4858_b571_11cfaa59c1a8 ;
+                                           core:prefLabel "1"@en .
+
+
+###  http://emmo.info/emmo/domain/onto#EMMO_b0f0e57e-464d-562f-80ec-b216c92d5e88
+:EMMO_b0f0e57e-464d-562f-80ec-b216c92d5e88 rdf:type owl:Class ;
+                                           rdfs:subClassOf emmo:EMMO_802d3e92_8770_4f98_a289_ccaaab7fdddf ;
+                                           core:prefLabel "Grain"@en .
+
+
+###  http://emmo.info/emmo/domain/onto#EMMO_b41c9cb3-3b2d-509f-9c93-aa04da134307
+:EMMO_b41c9cb3-3b2d-509f-9c93-aa04da134307 rdf:type owl:Class ;
+                                           rdfs:subClassOf :EMMO_1b2bfe71-5da9-5c46-b137-be45c3e3f9c3 ;
+                                           emmo:EMMO_967080e5_2f42_4eb2_a3a9_c58143e835f9 "NEED elucidation"@en ;
+                                           core:prefLabel "TemporalBoundary"@en .
+
+
+###  http://emmo.info/emmo/domain/onto#EMMO_cd254842-c697-55f6-917d-9805c77b9187
+:EMMO_cd254842-c697-55f6-917d-9805c77b9187 rdf:type owl:Class ;
+                                           rdfs:subClassOf emmo:EMMO_649bf97b_4397_4005_90d9_219755d92e34 ;
+                                           emmo:EMMO_967080e5_2f42_4eb2_a3a9_c58143e835f9 "everything that can be perceived or measured"@en ;
+                                           rdfs:comment " this definition is much broader than definition of pattern such as \"the regular and repeated way in which something happens or is\""@en ,
+                                                        "a pattern is defined from a contrast"@en ;
+                                           core:prefLabel "Pattern"@en .
+
+
+###  http://emmo.info/emmo/domain/onto#EMMO_d35b8f2a-64c0-5f57-a569-308bc8f8a1c5
+:EMMO_d35b8f2a-64c0-5f57-a569-308bc8f8a1c5 rdf:type owl:Class ;
+                                           rdfs:subClassOf emmo:EMMO_802d3e92_8770_4f98_a289_ccaaab7fdddf ;
+                                           core:prefLabel "Phase"@en .
+
+
+###  http://emmo.info/emmo/domain/onto#EMMO_e0b20a22-7e6f-5c81-beca-35bc5358e11b
+:EMMO_e0b20a22-7e6f-5c81-beca-35bc5358e11b rdf:type owl:Class ;
+                                           rdfs:subClassOf :EMMO_4b32833e-0833-56a7-903c-28a6a8191fe8 ,
+                                                           :EMMO_9fa9ca88-2891-538a-a8dd-ccb8a08b9890 ;
+                                           emmo:EMMO_967080e5_2f42_4eb2_a3a9_c58143e835f9 "NEED elucidation"@en ;
+                                           core:prefLabel "FiniteSpatioTemporalPattern"@en .
+
+
+###  Generated by the OWL API (version 4.5.9.2019-02-01T07:24:44Z) https://github.com/owlcs/owlapi
