@@ -27,7 +27,7 @@ def main(args: "List[str]" = None) -> None:
     """Turtle Canon - It's turtles all the way down."""
     from turtle_canon import __version__
     from turtle_canon.canon import canonize
-    from turtle_canon.cli.utils import print_error, print_summary, print_warning
+    from turtle_canon.cli import utils
     from turtle_canon.utils.exceptions import TurtleCanonException
     from turtle_canon.utils.warnings import TurtleCanonWarning
 
@@ -72,28 +72,34 @@ def main(args: "List[str]" = None) -> None:
 
     args: "CLIArgs" = parser.parse_args(args)  # type: ignore[assignment]
 
-    errors = []
-    warnings = []
+    cache = utils.Cache()
 
     number_of_turtle_files = len(args.turtle_files)
 
     while args.turtle_files:
         turtle_file = args.turtle_files.pop()
+        changed_file = None
         try:
-            canonize(turtle_file)
+            changed_file = canonize(turtle_file)
+            if changed_file:
+                cache.add_file(changed_file)
         except TurtleCanonException as exception:
             if args.fail_fast:
-                print_error(exception)
+                utils.print_error(exception)
             else:
-                errors.append(exception)
+                cache.add_error(exception)
         except TurtleCanonWarning as warning:
             if number_of_turtle_files == 1:
-                print_warning(warning)
-            warnings.append(warning)
+                utils.print_warning(warning)
+            cache.add_warning(warning)
+            if changed_file:
+                cache.add_file(changed_file)
 
-    if number_of_turtle_files == 1 and warnings:
+    if number_of_turtle_files == 1 and cache.warnings:
         pass
     else:
-        print_summary(errors=errors, warnings=warnings)
+        utils.print_summary(errors=cache.errors, warnings=cache.warnings)
+
+    utils.print_changed_files(cache.files, exit_after=bool(cache.errors))
 
     sys.exit()

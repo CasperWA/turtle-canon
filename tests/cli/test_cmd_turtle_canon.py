@@ -128,12 +128,16 @@ def test_multiple_files(
     assert not output.stderr, assertion_help
     assert output.returncode == 0
     assert "Successful" in output.stdout, assertion_help
+    for filename in single_turtle_permutations:
+        assert str(filename) in output.stdout, assertion_help
 
 
 def test_fail_fast(
     clirunner: "CLIRunner", single_turtle_permutations: "List[Path]", tmp_dir: Path
 ) -> None:
     """Test `--fail-fast`."""
+    from copy import deepcopy
+
     warning_file = tmp_dir / "empty.ttl"
     warning_file.touch()
     assert (
@@ -149,6 +153,7 @@ def test_fail_fast(
     ), f"{error_file} was expected to not exist, but suprisingly it does !"
 
     assert len(single_turtle_permutations) == 3
+    original_single_turtle_permutation = deepcopy(single_turtle_permutations)
 
     single_turtle_permutations.insert(1, error_file)
     single_turtle_permutations.insert(-1, warning_file)
@@ -173,8 +178,14 @@ def test_fail_fast(
     assert output.returncode == 1, assertion_help
     assert "ERROR" in output.stderr, assertion_help
     assert "*" in output.stderr, assertion_help
-    assert not output.stdout, assertion_help
+    assert output.stdout, assertion_help
     assert "Successful" not in output.stdout, assertion_help
+    for filename in original_single_turtle_permutation:
+        assert str(filename) in output.stdout, assertion_help
+    for filename in set(single_turtle_permutations) - set(
+        original_single_turtle_permutation
+    ):
+        assert str(filename) not in output.stdout, assertion_help
 
     output: "CLIRunnerOutput" = clirunner(
         ["--fail-fast"] + [str(_) for _ in single_turtle_permutations],

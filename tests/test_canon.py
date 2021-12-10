@@ -113,8 +113,11 @@ def test_export_ontology(top_dir: "Path", tmp_dir: "Path") -> None:
 
     ontology = Graph().parse(editable_turtle_file, format="turtle")
 
-    export_ontology(ontology=ontology, filename=editable_turtle_file)
+    changed = export_ontology(ontology=ontology, filename=editable_turtle_file)
 
+    assert (
+        not changed
+    ), f"The canonized Turtle file at {turtle_file} was unexpectadly changeable !"
     assert (
         editable_turtle_file.exists()
     ), f"The file has unexpectedly been removed after running `export_ontology()` !"
