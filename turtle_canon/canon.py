@@ -13,7 +13,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from typing import Union
 
 
-def canonize(turtle_file: "Union[Path, str]") -> None:
+def canonize(turtle_file: "Union[Path, str]") -> "Union[Path, None]":
     """The main function for running `turtle-canon`.
 
     Workflow:
@@ -30,10 +30,16 @@ def canonize(turtle_file: "Union[Path, str]") -> None:
         turtle_file: An absolute path or `pathlib.Path` object representing the Turtle
             file location.
 
+    Returns:
+        If the file has been changed during the canonization, the Turtle file's
+        location will be returned, otherwise `None` will be returned.
+
     """
     valid_turtle_file = validate_turtle(turtle_file)
     sorted_ontology = sort_ontology(valid_turtle_file)
-    export_ontology(sorted_ontology, valid_turtle_file)
+    changed_file = export_ontology(sorted_ontology, valid_turtle_file)
+
+    return Path(turtle_file) if changed_file else None
 
 
 def validate_turtle(turtle_file: "Union[Path, str]") -> Path:
@@ -120,12 +126,15 @@ def sort_ontology(turtle_file: Path) -> Graph:
     return sorted_ontology
 
 
-def export_ontology(ontology: Graph, filename: Path) -> None:
+def export_ontology(ontology: Graph, filename: Path) -> bool:
     """Export an ontology as a Turtle file.
 
     Parameters:
         ontology: A loaded ontology.
         filename: The Turtle file's fully resolved path to export to.
+
+    Returns:
+        Whether or not the exported ontology changed the file at `filename` or not.
 
     """
     if not filename.exists():
@@ -149,4 +158,8 @@ def export_ontology(ontology: Graph, filename: Path) -> None:
             f"Failed to properly save the loaded ontology from {filename} to file."
         )
 
+    changed = filename.read_text() != canonized_ttl
+
     filename.write_text(canonized_ttl, encoding="utf8")
+
+    return changed

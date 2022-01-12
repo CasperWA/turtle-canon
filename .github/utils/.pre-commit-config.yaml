@@ -1,0 +1,5 @@
+repos:
+- repo: https://github.com/CasperWA/turtle-canon
+  rev: COMMIT_SHA
+  hooks:
+  - id: turtle-canon
