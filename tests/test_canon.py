@@ -93,7 +93,7 @@ def test_export_ontology(top_dir: "Path", tmp_dir: "Path") -> None:
     rdflib_canonized_dir = top_dir / "tests" / "static" / "rdflib_canonized"
 
     for rdflib_version_turtle_file in rdflib_canonized_dir.glob("*.ttl"):
-        if re.match(fr".*_{rdflib_version}$", rdflib_version_turtle_file.stem):
+        if re.match(rf".*_{rdflib_version}$", rdflib_version_turtle_file.stem):
             turtle_file = rdflib_version_turtle_file
             break
     else:
