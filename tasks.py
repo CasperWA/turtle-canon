@@ -72,9 +72,11 @@ def setver(_, ver=""):
 @task(
     help={
         "pre-clean": "Remove the 'api_reference' sub directory prior to (re)creation."
-    }  # pylint: disable=too-many-locals
+    }
 )
-def create_api_reference_docs(context, pre_clean=False, pre_commit=False):
+def create_api_reference_docs(
+    context, pre_clean=False, pre_commit=False
+):  # pylint: disable=too-many-locals
     """Create the API Reference in the documentation"""
 
     def write_file(full_path: Path, content: str) -> None:
