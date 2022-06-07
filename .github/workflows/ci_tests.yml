@@ -65,7 +65,9 @@ jobs:
       run: pylint --rcfile=pyproject.toml *.py turtle_canon
 
     - name: Run safety
-      run: pip freeze | safety check --stdin
+      # Remove ignoring 48547 as soon as RDFLib/rdflib#1844 has been fixed and the fix
+      # has been released.
+      run: pip freeze | safety check --stdin -i 48547
 
   pytest:
     runs-on: ubuntu-latest
