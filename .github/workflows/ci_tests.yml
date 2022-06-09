@@ -16,7 +16,7 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Set up Python 3.9
-      uses: actions/setup-python@v3
+      uses: actions/setup-python@v4
       with:
         python-version: 3.9
 
@@ -50,7 +50,7 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Set up Python 3.9
-      uses: actions/setup-python@v3
+      uses: actions/setup-python@v4
       with:
         python-version: 3.9
 
@@ -65,7 +65,9 @@ jobs:
       run: pylint --rcfile=pyproject.toml *.py turtle_canon
 
     - name: Run safety
-      run: pip freeze | safety check --stdin
+      # Remove ignoring 48547 as soon as RDFLib/rdflib#1844 has been fixed and the fix
+      # has been released.
+      run: pip freeze | safety check --stdin -i 48547
 
   pytest:
     runs-on: ubuntu-latest
@@ -77,7 +79,7 @@ jobs:
         fetch-depth: 2
 
     - name: Set up Python 3.9
-      uses: actions/setup-python@v3
+      uses: actions/setup-python@v4
       with:
         python-version: 3.9
 
@@ -120,7 +122,7 @@ jobs:
         fetch-depth: 2
 
     - name: Set up Python 3.9
-      uses: actions/setup-python@v3
+      uses: actions/setup-python@v4
       with:
         python-version: 3.9
 
@@ -145,7 +147,7 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Set up Python 3.9
-      uses: actions/setup-python@v3
+      uses: actions/setup-python@v4
       with:
         python-version: 3.9
 
