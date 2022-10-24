@@ -4,7 +4,7 @@ target-version = ['py39']
 
 [tool.pytest.ini_options]
 minversion = "6.0"
-required_plugins = "pytest-cov>=3.0"
+required_plugins = "pytest-cov>=4.0"
 addopts = "-rs --cov=./turtle_canon/ --cov-report=term --durations=10"
 filterwarnings = [
     "ignore:.*imp module.*:DeprecationWarning",
