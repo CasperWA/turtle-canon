@@ -86,7 +86,7 @@ jobs:
       if: env.RELEASE_RUN == 'false'
       uses: actions/setup-python@v4
       with:
-        python-version: 3.9
+        python-version: "3.9"
 
     - name: Install dependencies
       if: env.RELEASE_RUN == 'false'
