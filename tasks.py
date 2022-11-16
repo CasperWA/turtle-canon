@@ -14,8 +14,8 @@ from pathlib import Path
 
 from invoke import task
 
-if TYPE_CHECKING:
-    from typing import Tuple
+if TYPE_CHECKING:  # pragma: no cover
+    from typing import Optional, Tuple
 
     from invoke import Context, Result
 
@@ -23,7 +23,9 @@ if TYPE_CHECKING:
 TOP_DIR = Path(__file__).parent.resolve()
 
 
-def update_file(filename: str, sub_line: "Tuple[str, str]", strip: str = None) -> None:
+def update_file(
+    filename: str, sub_line: "Tuple[str, str]", strip: "Optional[str]" = None
+) -> None:
     """Utility function for tasks to read, update, and write files"""
     with open(filename, "r") as handle:
         lines = [
@@ -159,7 +161,7 @@ def create_api_reference_docs(
     if pre_commit:
         # Check if there have been any changes.
         # List changes if yes.
-        if TYPE_CHECKING:
+        if TYPE_CHECKING:  # pragma: no cover
             context: "Context" = context
 
         # NOTE: grep returns an exit code of 1 if it doesn't find anything
@@ -275,7 +277,7 @@ def update_pytest_reqs(_):
 @task
 def create_canonized_test_file(context):
     """Canonize a standard test ontology file using the currently installed `rdflib`."""
-    if TYPE_CHECKING:
+    if TYPE_CHECKING:  # pragma: no cover
         context: "Context" = context
 
     try:

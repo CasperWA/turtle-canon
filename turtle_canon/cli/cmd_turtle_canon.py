@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
     from dataclasses import dataclass
-    from typing import List
+    from typing import List, Optional
 
     @dataclass
     class CLIArgs:
@@ -23,7 +23,7 @@ if TYPE_CHECKING:  # pragma: no cover
 LOGGING_LEVELS = [logging.getLevelName(level).lower() for level in range(0, 51, 10)]
 
 
-def main(args: "List[str]" = None) -> None:
+def main(args: "Optional[List[str]]" = None) -> None:
     """Turtle Canon - It's turtles all the way down."""
     from turtle_canon import __version__
     from turtle_canon.canon import canonize

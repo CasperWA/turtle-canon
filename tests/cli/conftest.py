@@ -7,7 +7,7 @@ import pytest
 
 CLIOutput = namedtuple("CLIOutput", ["stdout", "stderr", "returncode"])
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from subprocess import CalledProcessError, CompletedProcess
     from typing import Callable, List, Optional, Union
 

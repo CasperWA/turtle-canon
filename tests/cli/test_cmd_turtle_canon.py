@@ -2,7 +2,7 @@
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from subprocess import CalledProcessError, CompletedProcess
     from typing import List, Union
 
