@@ -1,4 +1,4 @@
 pre-commit~=3.0
-pylint~=2.15
+pylint~=2.16
 pytest~=7.2
 pytest-cov~=4.0
