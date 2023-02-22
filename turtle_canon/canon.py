@@ -97,8 +97,8 @@ def sort_ontology(turtle_file: Path) -> Graph:
         raise exceptions.FailedParsingFile(
             f"Failed to properly parse the Turtle file at {turtle_file}"
         ) from exc
-    else:
-        triples = sorted(ontology)
+
+    triples = sorted(ontology)
 
     if not triples:
         raise warnings.NoTriples(
@@ -150,8 +150,8 @@ def export_ontology(ontology: Graph, filename: Path) -> bool:
             raise exceptions.FailedExportToFile(
                 f"Failed to properly save the loaded ontology from {filename} to file."
             ) from exc
-        else:
-            canonized_ttl = tmp_turtle_file.read_text(encoding="utf8")
+
+        canonized_ttl = tmp_turtle_file.read_text(encoding="utf8")
 
     if not canonized_ttl or re.match(r"^\s$", canonized_ttl):
         raise exceptions.FailedExportToFile(
