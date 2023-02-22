@@ -150,7 +150,6 @@ def print_changed_files(
 
     """
     res = "\nChanged files:\n"
-    for file_ in files:
-        res += f"{file_}\n"
+    res += "{}\n".join(str(_) for _ in files)
 
     _print_message(res, target=sys.stdout, prefix="", exit_after=exit_after)
