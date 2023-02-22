@@ -15,7 +15,7 @@ from pathlib import Path
 from invoke import task
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Optional, Tuple
+    from typing import Optional, Tuple, Union
 
     from invoke import Context, Result
 
@@ -24,15 +24,17 @@ TOP_DIR = Path(__file__).parent.resolve()
 
 
 def update_file(
-    filename: str, sub_line: "Tuple[str, str]", strip: "Optional[str]" = None
+    filename: "Union[Path, str]",
+    sub_line: "Tuple[str, str]",
+    strip: "Optional[str]" = None,
 ) -> None:
     """Utility function for tasks to read, update, and write files"""
-    with open(filename, "r") as handle:
+    with open(filename, "r", encoding="utf8") as handle:
         lines = [
             re.sub(sub_line[0], sub_line[1], line.rstrip(strip)) for line in handle
         ]
 
-    with open(filename, "w") as handle:
+    with open(filename, "w", encoding="utf8") as handle:
         handle.write("\n".join(lines))
         handle.write("\n")
 
@@ -84,13 +86,13 @@ def create_api_reference_docs(
     def write_file(full_path: Path, content: str) -> None:
         """Write file with `content` to `full_path`"""
         if full_path.exists():
-            with open(full_path, "r") as handle:
+            with open(full_path, "r", encoding="utf8") as handle:
                 cached_content = handle.read()
             if content == cached_content:
                 del cached_content
                 return
             del cached_content
-        with open(full_path, "w") as handle:
+        with open(full_path, "w", encoding="utf8") as handle:
             handle.write(content)
 
     package_dir = TOP_DIR / "turtle_canon"
@@ -162,7 +164,7 @@ def create_api_reference_docs(
         # Check if there have been any changes.
         # List changes if yes.
         if TYPE_CHECKING:  # pragma: no cover
-            context: "Context" = context
+            context: "Context" = context  # type: ignore[no-redef]
 
         # NOTE: grep returns an exit code of 1 if it doesn't find anything
         # (which will be good in this case).
@@ -186,7 +188,7 @@ def create_docs_index(_):
     readme = TOP_DIR / "README.md"
     docs_index = TOP_DIR / "docs/index.md"
 
-    with open(readme) as handle:
+    with open(readme, encoding="utf8") as handle:
         content = handle.read()
 
     replacement_mapping = [
@@ -197,7 +199,7 @@ def create_docs_index(_):
     for old, new in replacement_mapping:
         content = content.replace(old, new)
 
-    with open(docs_index, "w") as handle:
+    with open(docs_index, "w", encoding="utf8") as handle:
         handle.write(content)
 
 
@@ -211,8 +213,8 @@ def update_pytest_reqs(_):
     # Retrieve dependencies specified in the config file
     with open(config, encoding="utf8") as handle:
         for line in handle.readlines():
-            plugins = re.match(r'^required_plugins = "(?P<plugins>.*)".*', line)
-            if plugins:
+            match = re.match(r'^required_plugins = "(?P<plugins>.*)".*', line)
+            if match:
                 break
         else:
             raise RuntimeError(
@@ -224,7 +226,7 @@ def update_pytest_reqs(_):
         dependency.group("name"): dependency.group("version")
         for dependency in [
             re.match(r"^(?P<name>[a-z-]+)>=(?P<version>[0-9]+(\.[0-9]+){1,2})$", _)
-            for _ in plugins.group("plugins").split(" ")  # type: ignore[union-attr]
+            for _ in match.group("plugins").split(" ")  # type: ignore[union-attr]
         ]
         if dependency
     }
@@ -246,10 +248,10 @@ def update_pytest_reqs(_):
     # Sanity check
     if dependencies_found_counter != len(plugins):
         raise RuntimeError(
-            f"Did not find all specified dependencies from the config file ({config}) in "
-            f"the development requirements file ({requirements}).\nDependencies found in "
-            f"the requirements file: {dependencies_found_counter}\nDependencies found in "
-            f"the config file: {len(plugins)}"
+            f"Did not find all specified dependencies from the config file ({config}) "
+            f"in the development requirements file ({requirements}).\nDependencies "
+            f"found in the requirements file: {dependencies_found_counter}\n"
+            f"Dependencies found in the config file: {len(plugins)}"
         )
 
     # Update the config file dependency versions (if necessary)
@@ -278,7 +280,7 @@ def update_pytest_reqs(_):
 def create_canonized_test_file(context):
     """Canonize a standard test ontology file using the currently installed `rdflib`."""
     if TYPE_CHECKING:  # pragma: no cover
-        context: "Context" = context
+        context: "Context" = context  # type: ignore[no-redef]
 
     try:
         from rdflib import (  # pylint: disable=import-outside-toplevel
