@@ -19,7 +19,7 @@ repos:
     exclude: ^.*\.ttl$
 
 - repo: https://github.com/ambv/black
-  rev: 23.9.1
+  rev: 23.10.1
   hooks:
   - id: black
     args:
@@ -33,7 +33,7 @@ repos:
     exclude: ^tests/.*$
 
 - repo: https://github.com/pre-commit/mirrors-mypy
-  rev: v1.5.1
+  rev: v1.6.1
   hooks:
   - id: mypy
     exclude: ^tests/.*$
