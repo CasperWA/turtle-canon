@@ -79,6 +79,7 @@ jobs:
     runs-on: ubuntu-latest
 
     strategy:
+      fail-fast: false
       matrix:
         pre-commit-version:
           - "==1.13.0"  # minimum pre-commit version for turtle-canon
