@@ -92,7 +92,7 @@ def sort_ontology(turtle_file: Path) -> Graph:
     """
     try:
         ontology = Graph().parse(location=str(turtle_file), format="turtle")
-    except (SyntaxError, ParserError, RDFlibError) as exc:
+    except (SyntaxError, PermissionError, ParserError, RDFlibError) as exc:
         raise exceptions.FailedParsingFile(
             f"Failed to properly parse the Turtle file at {turtle_file}"
         ) from exc
