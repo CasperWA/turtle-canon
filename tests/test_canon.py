@@ -1,9 +1,11 @@
 """Test `turtle_canon.canon` module functions."""
+from __future__ import annotations
+
 from typing import TYPE_CHECKING
 
 import pytest
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from pathlib import Path
 
 
@@ -23,7 +25,7 @@ def test_validate_turtle_no_file() -> None:
         validate_turtle(non_existant_file)
 
 
-def test_validate_turtle_empty_file(tmp_dir: "Path") -> None:
+def test_validate_turtle_empty_file(tmp_dir: Path) -> None:
     """Ensure a "warning" is raised if file is empty."""
     from turtle_canon.canon import validate_turtle
     from turtle_canon.utils.warnings import EmptyFile
@@ -37,7 +39,7 @@ def test_validate_turtle_empty_file(tmp_dir: "Path") -> None:
         validate_turtle(empty_file)
 
 
-def test_validate_turtle(simple_turtle_file: "Path") -> None:
+def test_validate_turtle(simple_turtle_file: Path) -> None:
     """Test `validate_turtle()` runs."""
     from turtle_canon.canon import validate_turtle
 
@@ -62,7 +64,7 @@ def test_export_ontology_not_found() -> None:
         export_ontology(ontology=Graph(), filename=non_existant_file)
 
 
-def test_export_ontology_failed_export(tmp_dir: "Path") -> None:
+def test_export_ontology_failed_export(tmp_dir: Path) -> None:
     """Ensure an exception is raised if the export fails, i.e., if the generated file
     is empty."""
     from rdflib import Graph
@@ -75,18 +77,22 @@ def test_export_ontology_failed_export(tmp_dir: "Path") -> None:
 
     with pytest.raises(
         FailedExportToFile,
-        match=f"Failed to properly save the loaded ontology from {empty_file.absolute()} to file.",
+        match=(
+            "Failed to properly save the loaded ontology from "
+            f"{empty_file.absolute()} to file."
+        ),
     ):
         export_ontology(ontology=Graph(), filename=empty_file)
 
 
-def test_export_ontology(top_dir: "Path", tmp_dir: "Path") -> None:
+def test_export_ontology(top_dir: Path, tmp_dir: Path) -> None:
     """Test `export_ontology()` runs."""
     import os
     import re
     import shutil
 
-    from rdflib import __version__ as rdflib_version, Graph
+    from rdflib import Graph
+    from rdflib import __version__ as rdflib_version
 
     from turtle_canon.canon import export_ontology
 
@@ -120,11 +126,11 @@ def test_export_ontology(top_dir: "Path", tmp_dir: "Path") -> None:
     ), f"The canonized Turtle file at {turtle_file} was unexpectadly changeable !"
     assert (
         editable_turtle_file.exists()
-    ), f"The file has unexpectedly been removed after running `export_ontology()` !"
+    ), "The file has unexpectedly been removed after running `export_ontology()` !"
     assert editable_turtle_file.read_text(encoding="utf8") == original_canonized_content
 
 
-def test_validate_turtle_binary_file(tmp_dir: "Path") -> None:
+def test_validate_turtle_binary_file(tmp_dir: Path) -> None:
     """Ensure an exception is raised when the file cannot be decoded as UTF-8."""
     from turtle_canon.canon import validate_turtle
     from turtle_canon.utils.exceptions import FailedReadingFile
@@ -140,14 +146,16 @@ def test_validate_turtle_binary_file(tmp_dir: "Path") -> None:
 
     with pytest.raises(
         FailedReadingFile,
-        match=f"The Turtle file {binary_file.absolute()} could not be opened and read \(using UTF-8 encoding\).",
+        match=(
+            rf"The Turtle file {binary_file.absolute()} could not be opened and read "
+            r"\(using UTF-8 encoding\)."
+        ),
     ):
         validate_turtle(binary_file)
 
 
-def test_validate_turtle_no_rw_file(tmp_dir: "Path") -> None:
+def test_validate_turtle_no_rw_file(tmp_dir: Path) -> None:
     """Ensure an exception is raised when the file cannot be read or written to."""
-    import os
 
     from turtle_canon.canon import validate_turtle
     from turtle_canon.utils.exceptions import FailedReadingFile
@@ -163,21 +171,23 @@ def test_validate_turtle_no_rw_file(tmp_dir: "Path") -> None:
     ), f"No rw test file {no_rw_file} expected to be non-empty, but it was empty !"
 
     try:
-        os.chmod(no_rw_file, 0o000)  # none
+        no_rw_file.chmod(0o000)  # none
 
         with pytest.raises(
             FailedReadingFile,
-            match=f"The Turtle file {no_rw_file.absolute()} could not be opened and read \(using UTF-8 encoding\).",
+            match=(
+                rf"The Turtle file {no_rw_file.absolute()} could not be opened and "
+                r"read \(using UTF-8 encoding\)."
+            ),
         ):
             validate_turtle(str(no_rw_file))
     finally:
-        os.chmod(no_rw_file, 0o644)
+        no_rw_file.chmod(0o644)
         assert no_rw_file.read_text()
 
 
-def test_validate_turtle_no_w_file(tmp_dir: "Path") -> None:
+def test_validate_turtle_no_w_file(tmp_dir: Path) -> None:
     """Ensure an exception is raised when the file cannot be read or written to."""
-    import os
 
     from turtle_canon.canon import validate_turtle
     from turtle_canon.utils.exceptions import FailedReadingFile
@@ -193,23 +203,23 @@ def test_validate_turtle_no_w_file(tmp_dir: "Path") -> None:
     ), f"No w test file {no_w_file} expected to be non-empty, but it was empty !"
 
     try:
-        os.chmod(no_w_file, 0o444)  # read only
+        no_w_file.chmod(0o444)  # read only
 
         with pytest.raises(
             FailedReadingFile,
             match=(
                 f"The Turtle file {no_w_file.absolute()} could not be opened and "
-                "written to \(using UTF-8 encoding\)."
+                r"written to \(using UTF-8 encoding\)."
             ),
         ):
             validate_turtle(str(no_w_file))
     finally:
-        os.chmod(no_w_file, 0o644)
+        no_w_file.chmod(0o644)
         assert no_w_file.read_text()
         assert no_w_file.write_text("test again")
 
 
-def test_sort_ontology(simple_turtle_file: "Path") -> None:
+def test_sort_ontology(simple_turtle_file: Path) -> None:
     """Test `sort_ontology()` runs."""
     from rdflib import Graph
 
@@ -219,7 +229,7 @@ def test_sort_ontology(simple_turtle_file: "Path") -> None:
     assert isinstance(ontology, Graph)
 
 
-def test_sort_ontology_no_triples(tmp_dir: "Path") -> None:
+def test_sort_ontology_no_triples(tmp_dir: Path) -> None:
     """Ensure a warning is raised (as an exception) if there are no triples.
 
     While the Turtle file in this test _is_ empty, this is not checked in
@@ -242,10 +252,9 @@ def test_sort_ontology_no_triples(tmp_dir: "Path") -> None:
         sort_ontology(empty_file)
 
 
-def test_sort_ontology_unparseable_file(tmp_dir: "Path") -> None:
+def test_sort_ontology_unparseable_file(tmp_dir: Path) -> None:
     """Ensure exceptions from RDFlib during parsing an unparseable Turtle file are
     wrapped as Turtle Canon exceptions."""
-    import os
 
     from turtle_canon.canon import sort_ontology
     from turtle_canon.utils.exceptions import FailedParsingFile
@@ -254,7 +263,7 @@ def test_sort_ontology_unparseable_file(tmp_dir: "Path") -> None:
     unparseable_file.write_text("test")
 
     try:
-        os.chmod(unparseable_file, 0o000)  # none
+        unparseable_file.chmod(0o000)  # none
 
         with pytest.raises(
             FailedParsingFile,
@@ -265,5 +274,5 @@ def test_sort_ontology_unparseable_file(tmp_dir: "Path") -> None:
         ):
             sort_ontology(unparseable_file)
     finally:
-        os.chmod(unparseable_file, 0o644)
+        unparseable_file.chmod(0o644)
         assert unparseable_file.read_text()

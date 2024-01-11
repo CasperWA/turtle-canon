@@ -1,11 +1,13 @@
 """General tests for Turtle Canon."""
+from __future__ import annotations
+
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pytest
 
-if TYPE_CHECKING:  # pragma: no cover
-    from typing import List
+if TYPE_CHECKING:
+    pass
 
 
 def test_repetitivity(simple_turtle_file: Path) -> None:
@@ -37,7 +39,7 @@ def test_repetitivity(simple_turtle_file: Path) -> None:
                 ).read_text(encoding="utf8")
 
 
-def test_permutated_files(single_turtle_permutations: "List[Path]") -> None:
+def test_permutated_files(single_turtle_permutations: list[Path]) -> None:
     """Ensure firing the Turtle Canon for a single file with content permutations
     renders the same result."""
     from turtle_canon.canon import canonize
@@ -101,6 +103,7 @@ def test_extra_whitespace(simple_turtle_file: Path) -> None:
     """Add random valid whitespace to a turtle file and ensure canonizing it doesn't
     change."""
     from random import randrange
+
     from turtle_canon.canon import canonize
 
     SPACE = " "
@@ -203,7 +206,7 @@ def test_extra_whitespace(simple_turtle_file: Path) -> None:
         ), assertion_fail_msg
 
 
-def test_different_sources(different_sources_ontologies: "List[Path]") -> None:
+def test_different_sources(different_sources_ontologies: list[Path]) -> None:
     """Test that the canonization is true only to the given set of triples."""
     import re
 

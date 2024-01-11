@@ -1,4 +1,5 @@
 """Exceptions for general usage by the Turtle Canon tool."""
+from __future__ import annotations
 
 
 class TurtleCanonException(Exception):

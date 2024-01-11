@@ -1,27 +1,24 @@
 """Test `turtle_canon.cli.cmd_turtle_canon` aka. the `turtle-canon` CLI."""
+from __future__ import annotations
+
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-if TYPE_CHECKING:  # pragma: no cover
-    from subprocess import CalledProcessError, CompletedProcess
-    from typing import List, Union
-
-    from .conftest import CLIOutput, CLIRunner
-
-    CLIRunnerOutput = Union[CalledProcessError, CLIOutput, CompletedProcess]
+if TYPE_CHECKING:
+    from .conftest import CLIRunner
 
 
-def test_version(clirunner: "CLIRunner") -> None:
+def test_version(clirunner: CLIRunner) -> None:
     """Test `--version`."""
     from turtle_canon import __version__
 
-    output: "CLIRunnerOutput" = clirunner(["--version"])
+    output = clirunner(["--version"])
     assert output.stdout == f"Turtle Canon version {__version__}\n"
 
 
-def test_absolute_path(clirunner: "CLIRunner", simple_turtle_file: Path) -> None:
+def test_absolute_path(clirunner: CLIRunner, simple_turtle_file: Path) -> None:
     """Simple test run with minimalistic Turtle file."""
-    output: "CLIRunnerOutput" = clirunner([str(simple_turtle_file)])
+    output = clirunner([str(simple_turtle_file)])
 
     assertion_help = (
         f"STDOUT: {output.stdout}\nSTDERR: {output.stderr}\nRETURN_CODE: "
@@ -34,7 +31,7 @@ def test_absolute_path(clirunner: "CLIRunner", simple_turtle_file: Path) -> None
     assert "Successful" in output.stdout, assertion_help
 
 
-def test_relative_path(clirunner: "CLIRunner", simple_turtle_file: Path) -> None:
+def test_relative_path(clirunner: CLIRunner, simple_turtle_file: Path) -> None:
     """Simple test run with minimalistic Turtle file."""
     relative_path = simple_turtle_file.relative_to("/tmp")
     assert str(relative_path) == str(
@@ -42,7 +39,7 @@ def test_relative_path(clirunner: "CLIRunner", simple_turtle_file: Path) -> None
     )
     assert not relative_path.is_absolute()
 
-    output: "CLIRunnerOutput" = clirunner([str(relative_path)], run_dir="/tmp")
+    output = clirunner([str(relative_path)], run_dir="/tmp")
 
     assertion_help = (
         f"STDOUT: {output.stdout}\nSTDERR: {output.stderr}\nRETURN_CODE: "
@@ -55,7 +52,7 @@ def test_relative_path(clirunner: "CLIRunner", simple_turtle_file: Path) -> None
     assert "Successful" in output.stdout, assertion_help
 
 
-def test_non_existant_file(clirunner: "CLIRunner") -> None:
+def test_non_existant_file(clirunner: CLIRunner) -> None:
     """Ensure an error is printed with error code != 0 if the passed file does not
     exist."""
     non_existant_file = Path(__file__).resolve().parent / "non-existant.ttl"
@@ -65,9 +62,7 @@ def test_non_existant_file(clirunner: "CLIRunner") -> None:
 
     error_substring = f"Supplied file {non_existant_file.absolute()} not found."
 
-    output: "CLIRunnerOutput" = clirunner(
-        [str(non_existant_file)], expected_error=error_substring
-    )
+    output = clirunner([str(non_existant_file)], expected_error=error_substring)
 
     assertion_help = (
         f"STDOUT: {output.stdout}\nSTDERR: {output.stderr}\nRETURN_CODE: "
@@ -75,15 +70,14 @@ def test_non_existant_file(clirunner: "CLIRunner") -> None:
     )
 
     assert output.stderr, assertion_help
-    assert (
-        error_substring in output.stderr and error_substring not in output.stdout
-    ), assertion_help
+    assert error_substring in output.stderr, assertion_help
+    assert error_substring not in output.stdout, assertion_help
     assert output.returncode == 1, assertion_help
     assert "ERROR" in output.stderr, assertion_help
     assert "Successful" not in output.stdout, assertion_help
 
 
-def test_empty_file(clirunner: "CLIRunner", tmp_dir: Path) -> None:
+def test_empty_file(clirunner: CLIRunner, tmp_dir: Path) -> None:
     """Ensure a warning is printed with error code != 0 if the passed file does not
     exist."""
     empty_file = tmp_dir / "empty.ttl"
@@ -97,7 +91,7 @@ def test_empty_file(clirunner: "CLIRunner", tmp_dir: Path) -> None:
 
     warning_substring = f"The Turtle file {empty_file.absolute()} is empty."
 
-    output: "CLIRunnerOutput" = clirunner([str(empty_file)])
+    output = clirunner([str(empty_file)])
 
     assertion_help = (
         f"STDOUT: {output.stdout}\nSTDERR: {output.stderr}\nRETURN_CODE: "
@@ -105,19 +99,18 @@ def test_empty_file(clirunner: "CLIRunner", tmp_dir: Path) -> None:
     )
 
     assert output.stderr, assertion_help
-    assert (
-        warning_substring in output.stderr and warning_substring not in output.stdout
-    ), assertion_help
+    assert warning_substring in output.stderr, assertion_help
+    assert warning_substring not in output.stdout, assertion_help
     assert output.returncode == 0
     assert "WARNING" in output.stderr, assertion_help
     assert "Successful" not in output.stdout, assertion_help
 
 
 def test_multiple_files(
-    clirunner: "CLIRunner", single_turtle_permutations: "List[Path]"
+    clirunner: CLIRunner, single_turtle_permutations: list[Path]
 ) -> None:
     """Ensure passing multiple files to the CLI works."""
-    output: "CLIRunnerOutput" = clirunner([str(_) for _ in single_turtle_permutations])
+    output = clirunner([str(_) for _ in single_turtle_permutations])
 
     assertion_help = (
         f"STDOUT: {output.stdout}\nSTDERR: {output.stderr}\nRETURN_CODE: "
@@ -133,7 +126,7 @@ def test_multiple_files(
 
 
 def test_fail_fast(
-    clirunner: "CLIRunner", single_turtle_permutations: "List[Path]", tmp_dir: Path
+    clirunner: CLIRunner, single_turtle_permutations: list[Path], tmp_dir: Path
 ) -> None:
     """Test `--fail-fast`."""
     from copy import deepcopy
@@ -152,8 +145,8 @@ def test_fail_fast(
         not error_file.exists()
     ), f"{error_file} was expected to not exist, but suprisingly it does !"
 
-    assert len(single_turtle_permutations) == 3
-    original_single_turtle_permutation = deepcopy(single_turtle_permutations)
+    assert len(single_turtle_permutations) > 1
+    original_single_turtle_permutations = deepcopy(single_turtle_permutations)
 
     single_turtle_permutations.insert(1, error_file)
     single_turtle_permutations.insert(-1, warning_file)
@@ -161,7 +154,7 @@ def test_fail_fast(
 
     error_substring = f"Supplied file {error_file.absolute()} not found."
 
-    output: "CLIRunnerOutput" = clirunner(
+    output = clirunner(
         [str(_) for _ in single_turtle_permutations],
         expected_error=error_substring,
     )
@@ -172,22 +165,21 @@ def test_fail_fast(
     )
 
     assert output.stderr, assertion_help
-    assert (
-        error_substring in output.stderr and error_substring not in output.stdout
-    ), assertion_help
+    assert error_substring in output.stderr, assertion_help
+    assert error_substring not in output.stdout, assertion_help
     assert output.returncode == 1, assertion_help
     assert "ERROR" in output.stderr, assertion_help
     assert "*" in output.stderr, assertion_help
     assert output.stdout, assertion_help
     assert "Successful" not in output.stdout, assertion_help
-    for filename in original_single_turtle_permutation:
+    for filename in original_single_turtle_permutations:
         assert str(filename) in output.stdout, assertion_help
     for filename in set(single_turtle_permutations) - set(
-        original_single_turtle_permutation
+        original_single_turtle_permutations
     ):
         assert str(filename) not in output.stdout, assertion_help
 
-    output: "CLIRunnerOutput" = clirunner(
+    output = clirunner(
         ["--fail-fast"] + [str(_) for _ in single_turtle_permutations],
         expected_error=error_substring,
     )
@@ -198,9 +190,8 @@ def test_fail_fast(
     )
 
     assert output.stderr, assertion_help
-    assert (
-        error_substring in output.stderr and error_substring not in output.stdout
-    ), assertion_help
+    assert error_substring in output.stderr, assertion_help
+    assert error_substring not in output.stdout, assertion_help
     assert output.returncode == 1, assertion_help
     assert "ERROR" in output.stderr, assertion_help
     assert "*" not in output.stderr, assertion_help

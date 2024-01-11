@@ -18,13 +18,10 @@ jobs:
       # pre-commit
       run_pre-commit: true
       python_version_pre-commit: "3.10"
-      skip_pre-commit_hooks: "pylint"
 
       # pylint & safety
       python_version_pylint_safety: "3.10"
-      run_pylint: true
-      pylint_targets: "turtle_canon"
-      pylint_options: "--rcfile=pyproject.toml --recursive=yes"
+      run_pylint: false
 
       run_safety: true
 
