@@ -68,6 +68,7 @@ jobs:
       with:
         fail_ci_if_error: true
         env_vars: OS,PYTHON
+        name: turtle-canon
         flags: turtle-canon
       env:
         OS: ubuntu-latest
