@@ -23,10 +23,10 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: Set up Python 3.9
+    - name: Set up Python 3.10
       uses: actions/setup-python@v5
       with:
-        python-version: "3.9"
+        python-version: "3.10"
 
     - name: Install Python dependencies
       run: |
@@ -99,10 +99,10 @@ jobs:
         ref: ${{ env.PUBLISH_UPDATE_BRANCH }}
         token: ${{ secrets.RELEASE_PAT }}
 
-    - name: Set up Python 3.9
+    - name: Set up Python 3.10
       uses: actions/setup-python@v5
       with:
-        python-version: "3.9"
+        python-version: "3.10"
 
     - name: Install Python dependencies
       run: |

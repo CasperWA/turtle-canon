@@ -1,18 +1,91 @@
+[build-system]
+requires = ["hatchling~=1.21"]
+build-backend = "hatchling.build"
+
+[project]
+name = "turtle-canon"
+authors = [
+    {name = "Casper Welzel Andersen", email = "casper.w.andersen@sintef.no"},
+]
+maintainers = [
+    {name = "Casper Welzel Andersen", email = "casper.w.andersen@sintef.no"},
+    {name = "Tor S. Haugland", email = "tor.haugland@sintef.no"},
+]
+description = "A tool for canonizing Turtle (`.ttl`) ontology files."
+readme = "README.md"
+license = {file = "LICENSE"}
+keywords = ["ontology", "turtle"]
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Topic :: Software Development",
+    "Topic :: Software Development :: Pre-processors",
+    "Topic :: Software Development :: Testing",
+    "Topic :: Software Development :: Version Control",
+    "Topic :: Text Processing",
+    "Topic :: Utilities",
+]
+requires-python = "~=3.10"
+dynamic = ["version"]
+
+dependencies = [
+    "rdflib>=6.0.1,<8",
+]
+
+[project.optional-dependencies]
+docs = [
+    "invoke~=2.2",
+    "mike~=2.0",
+    "mkdocs~=1.5",
+    "mkdocs-awesome-pages-plugin~=2.9",
+    "mkdocs-material~=9.5",
+    "mkdocs-minify-plugin~=0.7.2",
+    "mkdocstrings[python]~=0.24.0",
+]
+dev = [
+    "pre-commit~=3.6",
+    "pylint~=3.0",
+    "pytest~=7.4",
+    "pytest-cov~=4.1",
+    "turtle-canon[docs]",
+]
+
+[project.urls]
+Home = "https://CasperWA.github.io/turtle-canon"
+Documentation = "https://CasperWA.github.io/turtle-canon"
+Source = "https://github.com/CasperWA/turtle-canon"
+"Issue Tracker" = "https://github.com/CasperWA/turtle-canon/issues"
+Changelog = "https://github.com/CasperWA/turtle-canon/blob/main/CHANGELOG.md"
+Package = "https://pypi.org/project/turtle-canon"
+
+[project.scripts]
+turtle-canon = "turtle_canon.cli.cmd_turtle_canon:main"
+
+[tool.hatch.version]
+path = "turtle_canon/__init__.py"
+
 [tool.black]
 line-length = 88
-target-version = ['py39']
+target-version = ['py310']
 
 [tool.pytest.ini_options]
-minversion = "6.0"
+minversion = "7.4"
 required_plugins = "pytest-cov>=4.1"
-addopts = "-rs --cov=./turtle_canon/ --cov-report=term --durations=10"
+addopts = "-rs --cov=turtle_canon --cov-report=term-missing"
 filterwarnings = [
-    "ignore:.*imp module.*:DeprecationWarning",
-    "ignore:.*invalid escape sequence.*:DeprecationWarning",
+    "error",
+    # "ignore:.*imp module.*:DeprecationWarning",
+    # "ignore:.*invalid escape sequence.*:DeprecationWarning",
 ]
 
 [tool.mypy]
-python_version = "3.9"
+python_version = "3.10"
 ignore_missing_imports = true
 scripts_are_modules = true
 warn_unused_configs = true
