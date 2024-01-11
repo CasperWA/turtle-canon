@@ -40,7 +40,6 @@ dependencies = [
 
 [project.optional-dependencies]
 docs = [
-    "invoke~=2.2",
     "mike~=2.0",
     "mkdocs~=1.5",
     "mkdocs-awesome-pages-plugin~=2.9",
@@ -76,7 +75,6 @@ target-version = ['py310']
 
 [tool.pytest.ini_options]
 minversion = "7.4"
-required_plugins = "pytest-cov>=4.1"
 addopts = "-rs --cov=turtle_canon --cov-report=term-missing"
 filterwarnings = [
     "error",

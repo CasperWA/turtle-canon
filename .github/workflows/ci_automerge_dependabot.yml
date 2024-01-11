@@ -1,79 +1,51 @@
-name: CI - Activate auto-merging for Dependabot PRs
+name: CI - Activate auto-merging for dependencies PRs
 
 on:
   pull_request_target:
-    branches: [ci/dependabot-updates]
+    branches: [ci/dependency-updates]
 
 jobs:
-  update-dependabot-branch:
-    name: Update permanent dependabot branch
+  update-dependencies-branch:
+    name: External
+    uses: SINTEF/ci-cd/.github/workflows/ci_automerge_prs.yml@v2.7.1
     if: github.repository_owner == 'CasperWA' && startsWith(github.event.pull_request.head.ref, 'dependabot/') && github.actor == 'dependabot[bot]'
-    runs-on: ubuntu-latest
-
-    env:
-      DEPENDABOT_BRANCH: ci/dependabot-updates
-      GIT_USER_NAME: CasperWA
-      GIT_USER_EMAIL: "casper+github@welzel.nu"
-
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-        ref: ${{ github.event.pull_request.head.ref }}
-        persist-credentials: false
-
-    - name: Setup Python 3.10
-      uses: actions/setup-python@v5
-      with:
-        python-version: "3.10"
-
-    - name: Set up git user info
-      run: |
-        git config --global user.name "${{ env.GIT_USER_NAME }}"
-        git config --global user.email "${{ env.GIT_USER_EMAIL }}"
-
-    - name: Install Python dependencies
-      run: |
-        python -m pip install --upgrade pip
+    with:
+      perform_changes: true
+      git_username: CasperWA
+      git_email: "casper.w.andersen@sintef.no"
+      changes: |
+        pip install --upgrade pip
         pip install -U setuptools wheel
+        pip install -U .
 
-        while IFS="" read -r line || [ -n "${line}" ]; do
-          if [[ "${line}" =~ ^invoke.*$ ]]; then
-            invoke="${line}"
+        RDFLIB_VERSION="$(python -c 'import rdflib; print(rdflib.__version__)')"
+        CANONIZED_FILENAME="turtle_canon_tests_canonized_${RDFLIB_VERSION}.ttl"
+        CANONIZED_FILEPATH="${{ github.workspace }}/tests/static/rdflib_canonized/${CANONIZED_FILENAME}"
+        CORE_TEST_ONTOLOGY_FILE="${{ github.workspace }}/tests/static/rdflib_canon_tests.ttl"
+
+        if [ -f "${CANONIZED_FILEPATH}" ]; then
+          echo "Canonized test file for RDFlib version ${RDFLIB_VERSION} already exists, checking contents..."
+
+          # Copy core test ontology file into a temporary file and canonize it
+          TEMP_FILEPATH="/tmp/${CANONIZED_FILENAME}.ttl"
+          cp "${CORE_TEST_ONTOLOGY_FILE}" "${TEMP_FILEPATH}"
+          turtle-canon "${TEMP_FILEPATH}"
+
+          if [ "$(diff "${TEMP_FILEPATH}" "${CANONIZED_FILEPATH}")" ]; then
+            echo "The existing canonized test file for RDFlib version ${RDFLIB_VERSION} differs from the currently generated one using the same version !"
+            rm -f "${TEMP_FILEPATH}"
+            exit 1
+          else
+            echo "Canonized test file for RDFlib version ${RDFLIB_VERSION} is up-to-date, nothing to do."
+            rm -f "${TEMP_FILEPATH}"
+            exit 0
           fi
-        done < requirements_docs.txt
-
-        pip install ${invoke}
-        pip install -r requirements.txt
-        pip install .
-
-    - name: Run tasks (and commit)
-      run: |
-        invoke update-pytest-reqs
-        invoke create-canonized-test-file
-
-        git add pyproject.toml tests/static/rdflib_canonized
-        if [ -n "$(git status --porcelain pyproject.toml tests/static/rdflib_canonized)" ]; then
-          # Only commit if there's something to commit (git will return non-zero otherwise)
-          echo "Committing update to pytest dependency config and/or RDFlib version-specific canonized test file !"
-          git commit -m "Update version-specific parts\n\nUpdate pytest dependency config and/or\nRDFlib version-specific canonized test file"
-          echo "PUSH_BACK_TO_BRANCH=true" >> $GITHUB_ENV
         else
-          echo "No changes to pytest dependency config and/or RDFlib version-specific canonized test file."
-          echo "PUSH_BACK_TO_BRANCH=false" >> $GITHUB_ENV
+          echo "No canonized test file for RDFlib version ${RDFLIB_VERSION} found, creating it..."
+
+          cp "${CORE_TEST_ONTOLOGY_FILE}" "${CANONIZED_FILEPATH}"
+          turtle-canon "${CANONIZED_FILEPATH}"
+          exit 0
         fi
-
-    - name: Update Dependabot branch
-      if: env.PUSH_BACK_TO_BRANCH == 'true'
-      uses: ad-m/github-push-action@master
-      with:
-        github_token: ${{ secrets.RELEASE_PAT }}
-        branch: ${{ github.event.pull_request.head.ref }}
-
-    - name: Activate auto-merge
-      run: |
-        PR_ID="$(gh api graphql -F owner='{owner}' -F name='{repo}' -f query='query($owner: String!, $name: String!) {repository(owner: $owner, name: $name) {pullRequest(number: ${{ github.event.pull_request.number }}) {id}}}' --jq '.data.repository.pullRequest.id')"
-        gh api graphql -f pr_id="$PR_ID" -f query='mutation($pr_id: ID!) {enablePullRequestAutoMerge(input:{mergeMethod:SQUASH,pullRequestId:$pr_id }) {pullRequest {number}}}'
-      env:
-        GITHUB_TOKEN: ${{ secrets.RELEASE_PAT }}
+    secrets:
+      PAT: ${{ secrets.RELEASE_PAT }}
