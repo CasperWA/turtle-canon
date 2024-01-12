@@ -23,6 +23,7 @@ jobs:
       python_version_build: "3.10"
       version_update_changes: |
         README.md,latest stable version is \*\*.*\*\*\.,latest stable version is **{version}**.
+        docs/index.md,latest stable version is \*\*.*\*\*\.,latest stable version is **{version}**.
       build_libs: build
       build_cmd: "python -m build"
       changelog_exclude_labels: skip_changelog,duplicate,question,invalid,wontfix
