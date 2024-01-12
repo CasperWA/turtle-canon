@@ -1,19 +1,18 @@
 """The main `turtle-canon` module."""
-from pathlib import Path
+from __future__ import annotations
+
 import re
+from pathlib import Path
 from tempfile import TemporaryDirectory
-from typing import TYPE_CHECKING
 
 from rdflib import Graph
+from rdflib.exceptions import Error as RDFlibError
+from rdflib.exceptions import ParserError
 
 from turtle_canon.utils import exceptions, warnings
 
 
-if TYPE_CHECKING:  # pragma: no cover
-    from typing import Union
-
-
-def canonize(turtle_file: "Union[Path, str]") -> "Union[Path, None]":
+def canonize(turtle_file: Path | str) -> Path | None:
     """The main function for running `turtle-canon`.
 
     Workflow:
@@ -42,7 +41,7 @@ def canonize(turtle_file: "Union[Path, str]") -> "Union[Path, None]":
     return Path(turtle_file) if changed_file else None
 
 
-def validate_turtle(turtle_file: "Union[Path, str]") -> Path:
+def validate_turtle(turtle_file: Path | str) -> Path:
     """Validate a Turtle file.
 
     Parameters:
@@ -93,7 +92,7 @@ def sort_ontology(turtle_file: Path) -> Graph:
     """
     try:
         ontology = Graph().parse(location=str(turtle_file), format="turtle")
-    except Exception as exc:
+    except (SyntaxError, PermissionError, ParserError, RDFlibError) as exc:
         raise exceptions.FailedParsingFile(
             f"Failed to properly parse the Turtle file at {turtle_file}"
         ) from exc
@@ -111,7 +110,7 @@ def sort_ontology(turtle_file: Path) -> Graph:
     try:
         for triple in triples:
             sorted_ontology.add(triple)
-    except Exception as exc:
+    except (AssertionError, RDFlibError) as exc:
         raise exceptions.FailedCreatingOntology(
             "Failed to properly create a sorted ontology from the triples in the "
             f"Turtle file at {turtle_file}"
@@ -146,7 +145,7 @@ def export_ontology(ontology: Graph, filename: Path) -> bool:
         tmp_turtle_file = Path(tmp_dir) / "tmp_turtle_file.ttl"
         try:
             ontology.serialize(tmp_turtle_file, format="turtle")
-        except Exception as exc:
+        except (ValueError, RDFlibError) as exc:
             raise exceptions.FailedExportToFile(
                 f"Failed to properly save the loaded ontology from {filename} to file."
             ) from exc

@@ -1,43 +1,51 @@
 """PyTest fixtures for the CLI (`turtle_canon.cli`)."""
-from collections import namedtuple
+from __future__ import annotations
+
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, NamedTuple
 
 import pytest
 
-CLIOutput = namedtuple("CLIOutput", ["stdout", "stderr", "returncode"])
-
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from subprocess import CalledProcessError, CompletedProcess
-    from typing import Callable, List, Optional, Union
+    from sys import _ExitCode
+    from typing import Protocol
 
-    from pytest import FixtureRequest
+    class CLIRunner(Protocol):
+        """Callable protocol for calling the `turtle-canon` CLI."""
 
-    CLIRunner = Callable[
-        [
-            Optional[List[str]],
-            Optional[str],
-            Optional[Union[Path, str]],
-            bool,
-        ],
-        Union[CalledProcessError, CLIOutput, CompletedProcess],
-    ]
+        def __call__(
+            self,
+            options: list[str] | None = None,
+            expected_error: str | None = None,
+            run_dir: Path | str | None = None,
+            use_subprocess: bool = True,
+        ) -> CalledProcessError | CLIOutput | CompletedProcess:
+            ...
+
+
+class CLIOutput(NamedTuple):
+    """Captured CLI output."""
+
+    stdout: str
+    stderr: str
+    returncode: _ExitCode | int
 
 
 @pytest.fixture(scope="session", params=[True, False])
-def clirunner(request: "FixtureRequest") -> "CLIRunner":
+def clirunner(request: pytest.FixtureRequest) -> CLIRunner:
     """Call the `turtle-canon` CLI."""
-    from contextlib import redirect_stderr, redirect_stdout
     import os
-    from subprocess import run, CalledProcessError
+    from contextlib import redirect_stderr, redirect_stdout
+    from subprocess import CalledProcessError, run
     from tempfile import TemporaryDirectory
 
     def _clirunner(
-        options: "Optional[List[str]]" = None,
-        expected_error: "Optional[str]" = None,
-        run_dir: "Optional[Union[Path, str]]" = None,
+        options: list[str] | None = None,
+        expected_error: str | None = None,
+        run_dir: Path | str | None = None,
         use_subprocess: bool = request.param,
-    ) -> "Union[CalledProcessError, CLIOutput, CompletedProcess]":
+    ) -> CalledProcessError | CLIOutput | CompletedProcess:
         """Call the `turtle-canon` CLI.
 
         Parameters:
@@ -79,7 +87,7 @@ def clirunner(request: "FixtureRequest") -> "CLIRunner":
         if use_subprocess:
             try:
                 output = run(
-                    args=["turtle-canon"] + options,
+                    args=["turtle-canon", *options],
                     capture_output=True,
                     check=True,
                     cwd=run_dir.name
@@ -120,18 +128,17 @@ def clirunner(request: "FixtureRequest") -> "CLIRunner":
             with TemporaryDirectory() as tmpdir:
                 stdout_path = Path(tmpdir) / "out.txt"
                 stderr_path = Path(tmpdir) / "err.txt"
-                original_cwd = os.getcwd()
+                original_cwd = Path.cwd()
                 try:
                     os.chdir(
                         run_dir.name
                         if isinstance(run_dir, TemporaryDirectory)
                         else run_dir
                     )
-                    with open(stdout_path, "w") as stdout, open(
-                        stderr_path, "w"
-                    ) as stderr:
-                        with redirect_stdout(stdout), redirect_stderr(stderr):
-                            cli(options if options else None)
+                    with stdout_path.open("w") as stdout, stderr_path.open(
+                        "w"
+                    ) as stderr, redirect_stdout(stdout), redirect_stderr(stderr):
+                        cli(options if options else None)
                 except SystemExit as exit_:
                     output = CLIOutput(
                         stdout_path.read_text(),

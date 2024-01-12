@@ -1,48 +1,51 @@
 """Utility functions for `turtle-canon` CLI."""
-from pathlib import Path
+from __future__ import annotations
+
 import sys
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import List, Optional, Sequence, TextIO, Union
+    from collections.abc import Sequence
+    from typing import TextIO
 
 
 class Cache:
     """Small cache."""
 
     def __init__(self) -> None:
-        self._errors: "List[Union[str, Exception]]" = []
-        self._warnings: "List[Union[str, Exception]]" = []
-        self._files: "List[Union[str, Path]]" = []
+        self._errors: list[str | Exception] = []
+        self._warnings: list[str | Exception] = []
+        self._files: list[str | Path] = []
 
     @property
-    def errors(self) -> "List[Union[str, Exception]]":
+    def errors(self) -> list[str | Exception]:
         """Get `errors` attribute."""
         return self._errors
 
     @property
-    def warnings(self) -> "List[Union[str, Exception]]":
+    def warnings(self) -> list[str | Exception]:
         """Get `warnings` attribute."""
         return self._warnings
 
     @property
-    def files(self) -> "List[Union[str, Path]]":
+    def files(self) -> list[str | Path]:
         """Get `files` attribute."""
         return self._files
 
-    def add_error(self, error: "Union[str, Exception]") -> None:
+    def add_error(self, error: str | Exception) -> None:
         """Add an error to the cache."""
         if not isinstance(error, (str, Exception)):
             raise TypeError("error must be either a str or Exception")
         self._errors.append(error)
 
-    def add_warning(self, warning: "Union[str, Exception]") -> None:
+    def add_warning(self, warning: str | Exception) -> None:
         """Add a warning to the cache."""
         if not isinstance(warning, (str, Exception)):
             raise TypeError("warning must be either a str or Exception")
         self._warnings.append(warning)
 
-    def add_file(self, file: "Union[str, Path]") -> None:
+    def add_file(self, file: str | Path) -> None:
         """Add a file to the cache."""
         if not isinstance(file, (str, Path)):
             raise TypeError("file must be either a str or Exception")
@@ -51,8 +54,8 @@ class Cache:
 
 def _print_message(
     message: str,
-    target: "Optional[TextIO]" = None,
-    prefix: "Optional[str]" = None,
+    target: TextIO | None = None,
+    prefix: str | None = None,
     exit_after: bool = False,
 ) -> None:
     """Print a message to target.
@@ -72,7 +75,7 @@ def _print_message(
         sys.exit(1)
 
 
-def print_error(message: "Union[str, Exception]", exit_after: bool = True) -> None:
+def print_error(message: str | Exception, exit_after: bool = True) -> None:
     """Print an error message to the console.
 
     Parameters:
@@ -86,7 +89,7 @@ def print_error(message: "Union[str, Exception]", exit_after: bool = True) -> No
     _print_message(res, target=sys.stderr, prefix="ERROR: ", exit_after=exit_after)
 
 
-def print_warning(message: "Union[str, Exception]", exit_after: bool = False) -> None:
+def print_warning(message: str | Exception, exit_after: bool = False) -> None:
     """Print a warnings message to the console.
 
     Parameters:
@@ -101,8 +104,8 @@ def print_warning(message: "Union[str, Exception]", exit_after: bool = False) ->
 
 
 def print_summary(
-    errors: "Optional[Sequence[Union[str, Exception]]]" = None,
-    warnings: "Optional[Sequence[Union[str, Exception]]]" = None,
+    errors: Sequence[str | Exception] | None = None,
+    warnings: Sequence[str | Exception] | None = None,
     exit_after: bool = False,
 ) -> None:
     """Print a summary, including of error and/or warning messages.
@@ -139,9 +142,7 @@ def print_summary(
     _print_message(res[:-1], target=target, prefix="", exit_after=exit_after)
 
 
-def print_changed_files(
-    files: "Sequence[Union[str, Path]]", exit_after: bool = False
-) -> None:
+def print_changed_files(files: Sequence[str | Path], exit_after: bool = False) -> None:
     """Print list of changed files.
 
     Parameters:

@@ -8,66 +8,38 @@ on:
       - 'push-action/**'
 
 jobs:
-  pre-commit:
-    runs-on: ubuntu-latest
+  basic-tests:
+    name: External
+    uses: SINTEF/ci-cd/.github/workflows/ci_tests.yml@v2.7.1
+    with:
+      # General setup
+      install_extras: "[dev]"
 
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      # pre-commit
+      run_pre-commit: true
+      python_version_pre-commit: "3.10"
 
-    - name: Set up Python 3.9
-      uses: actions/setup-python@v5
-      with:
-        python-version: "3.9"
+      # pylint & safety
+      python_version_pylint_safety: "3.10"
+      run_pylint: false
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -U setuptools wheel
+      run_safety: true
 
-        while IFS="" read -r line || [ -n "${line}" ]; do
-            if [[ "${line}" =~ ^pre-commit.*$ ]]; then
-                pre_commit="${line}"
-            fi
-        done < requirements_dev.txt
+      # Build dist
+      run_build_package: true
+      python_version_package: "3.10"
+      build_libs: "build"
+      build_cmd: "python -m build"
 
-        while IFS="" read -r line || [ -n "${line}" ]; do
-            if [[ "${line}" =~ ^invoke.*$ ]]; then
-                invoke="${line}"
-            fi
-        done < requirements_docs.txt
+      # Build documentation
+      run_build_docs: true
+      python_version_docs: "3.10"
+      warnings_as_errors: true
+      use_mkdocs: true
 
-        pip install ${pre_commit} ${invoke}
-
-    - name: Test with pre-commit
-      run: SKIP=pylint pre-commit run --all-files
-
-  pylint-safety:
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-
-    - name: Set up Python 3.9
-      uses: actions/setup-python@v5
-      with:
-        python-version: "3.9"
-
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -U setuptools wheel
-        pip install -r requirements.txt -r requirements_docs.txt -r requirements_dev.txt
-        pip install safety
-
-    - name: Run pylint
-      run: pylint --rcfile=pyproject.toml *.py turtle_canon
-
-    - name: Run safety
-      # Remove ignoring 48547 as soon as RDFLib/rdflib#1844 has been fixed and the fix
-      # has been released.
-      run: pip freeze | safety check --stdin -i 48547
+      update_python_api_ref: true
+      update_docs_landing_page: true
+      package_dirs: "turtle_canon"
 
   pytest:
     runs-on: ubuntu-latest
@@ -75,13 +47,11 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
-      with:
-        fetch-depth: 2
 
-    - name: Set up Python 3.9
+    - name: Set up Python 3.10
       uses: actions/setup-python@v5
       with:
-        python-version: "3.9"
+        python-version: "3.10"
 
     - name: Install python dependencies
       run: |
@@ -96,73 +66,42 @@ jobs:
       if: github.repository == 'CasperWA/turtle-canon'
       uses: codecov/codecov-action@v3
       with:
+        fail_ci_if_error: true
+        env_vars: OS,PYTHON
         name: turtle-canon
-        files: ./coverage.xml
         flags: turtle-canon
-
-  build-package:
-    name: Build source distribution
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-
-    - name: Check build and install source distribution
-      uses: CasperWA/check-sdist-action@v1
-
-  docs:
-    name: Documentation
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 2
-
-    - name: Set up Python 3.9
-      uses: actions/setup-python@v5
-      with:
-        python-version: "3.9"
-
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -U setuptools wheel
-        pip install -e .[docs]
-
-    - name: Build
-      run: |
-        invoke create-api-reference-docs --pre-clean
-        invoke create-docs-index
-        mkdocs build --strict --verbose
+      env:
+        OS: ubuntu-latest
+        PYTHON: "3.10"
 
   as-pre-commit-hook:
-    name: As a pre-commit hook
+    name: As a pre-commit hook (pre-commit ${{ matrix.pre-commit-version }})
     runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        pre-commit-version:
+          - "==1.15.0"  # minimum pre-commit version for turtle-canon
+          # latest major versions
+          - "~=1.0"
+          - "~=2.0"
+          - "~=3.0"
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: Set up Python 3.9
+    - name: Set up Python 3.10
       uses: actions/setup-python@v5
       with:
-        python-version: "3.9"
+        python-version: "3.10"
 
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -U setuptools wheel
-
-        while IFS="" read -r line || [ -n "${line}" ]; do
-            if [[ "${line}" =~ ^pre-commit.*$ ]]; then
-                pre_commit="${line}"
-            fi
-        done < requirements_dev.txt
-
-        pip install ${pre_commit}
+        pip install "pre-commit${{ matrix.pre-commit-version }}"
 
     - name: Set 'rev' to current commit SHA
       run: sed -i "s|COMMIT_SHA|${GITHUB_SHA}|" .github/utils/.pre-commit-config.yaml
@@ -174,10 +113,16 @@ jobs:
       run: |
         if [ -z "$(git status --porcelain tests)" ]; then
           echo "Turtle Canon didn't canonize any files under tests/ !"
+
+          echo "pre-commit log:"
+          cat "/home/runner/.cache/pre-commit/pre-commit.log"
           exit 1
         fi
         if [ -n "$(git status --porcelain tests/static/rdflib_canonized)" ]; then
           echo "Turtle Canon canonized already canonized files under tests/static/rdflib_canonized !"
+
+          echo "pre-commit log:"
+          cat "/home/runner/.cache/pre-commit/pre-commit.log"
           exit 1
         fi
 

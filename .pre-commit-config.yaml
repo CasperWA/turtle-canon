@@ -2,17 +2,16 @@ repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
   rev: v4.5.0
   hooks:
-  - id: check-symlinks
+  - id: check-toml
+    name: Check TOML
   - id: check-yaml
     name: Check YAML
   - id: check-xml
     name: Check XML
     files: \.(xml|rdf|ttl)$
-  - id: destroyed-symlinks
+  - id: debug-statements
   - id: end-of-file-fixer
     exclude: ^.*\.ttl$
-  - id: requirements-txt-fixer
-    name: Fix requirements*.txt
     files: ^requirements.*\.txt$
   - id: trailing-whitespace
     args: [--markdown-linebreak-ext=md]
@@ -22,8 +21,28 @@ repos:
   rev: 23.12.1
   hooks:
   - id: black
+
+- repo: https://github.com/SINTEF/ci-cd
+  rev: v2.7.1
+  hooks:
+  - id: docs-api-reference
     args:
-      - --config=pyproject.toml
+      - --package-dir=turtle_canon
+  - id: docs-landing-page
+
+- repo: https://github.com/astral-sh/ruff-pre-commit
+  rev: v0.1.11
+  hooks:
+  - id: ruff
+    args:
+      - --fix
+      - --show-fixes
+
+- repo: https://github.com/asottile/pyupgrade
+  rev: v3.15.0
+  hooks:
+  - id: pyupgrade
+    args: [--py310-plus]
 
 - repo: https://github.com/PyCQA/bandit
   rev: '1.7.6'
@@ -41,29 +60,6 @@ repos:
 
 - repo: local
   hooks:
-  - id: pylint
-    name: pylint
-    entry: pylint
-    language: python
-    types: [python]
-    require_serial: true
-    exclude: ^tests/.*$
-  - id: update-docs-api-reference
-    name: Update API Reference in Documentation
-    entry: invoke
-    args: [create-api-reference-docs, --pre-clean, --pre-commit]
-    language: python
-    pass_filenames: false
-    files: ^turtle_canon/.*\.py$
-    description: Update the API Reference documentation, whenever a Python file is touched in the code base.
-  - id: update-docs-index
-    name: Update Landing Page for Documentation
-    entry: invoke
-    args: [create-docs-index]
-    language: python
-    pass_filenames: false
-    files: ^README\.md$
-    description: Update the landing page for the documentation if the source file (README.md) is changed.
   - id: codecov-validator
     name: Validate .codecov.yml
     description: Validate .codecov.yml using codecov's online validation tool.

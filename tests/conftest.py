@@ -1,11 +1,13 @@
 """Pytest fixtures and setup functions."""
+from __future__ import annotations
+
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pytest
 
-if TYPE_CHECKING:  # pragma: no cover
-    from typing import List
+if TYPE_CHECKING:
+    pass
 
 
 @pytest.fixture(scope="session")
@@ -14,7 +16,7 @@ def top_dir() -> Path:
     return Path(__file__).resolve().parent.parent
 
 
-@pytest.fixture
+@pytest.fixture()
 def simple_turtle_file(top_dir: Path) -> Path:
     """Load and return `Path` object to a simple Turtle file."""
     import os
@@ -30,13 +32,14 @@ def simple_turtle_file(top_dir: Path) -> Path:
         yield Path(copy(turtle_file, Path(tmpdir.name) / turtle_file.name))
     finally:
         tmpdir.cleanup()
-        assert not Path(
-            tmpdir.name
-        ).exists(), f"Failed to remove temporary directory at {tmpdir.name}. Content:\n{os.listdir(tmpdir.name)}"
+        assert not Path(tmpdir.name).exists(), (
+            f"Failed to remove temporary directory at {tmpdir.name}. "
+            f"Content:\n{os.listdir(tmpdir.name)}"
+        )
 
 
-@pytest.fixture
-def single_turtle_permutations(top_dir: Path) -> "List[Path]":
+@pytest.fixture()
+def single_turtle_permutations(top_dir: Path) -> list[Path]:
     """Yield list of a single turtle file and permutations of it.
 
     The permutations are restructuring of the list of classes.
@@ -62,7 +65,7 @@ def single_turtle_permutations(top_dir: Path) -> "List[Path]":
         )
 
 
-@pytest.fixture
+@pytest.fixture()
 def tmp_dir() -> Path:
     """Open and yield a temporary directory."""
     import os
@@ -79,8 +82,8 @@ def tmp_dir() -> Path:
         )
 
 
-@pytest.fixture
-def different_sources_ontologies(top_dir: Path) -> "List[Path]":
+@pytest.fixture()
+def different_sources_ontologies(top_dir: Path) -> list[Path]:
     """Yield list of Turtle files generated using different tools, i.e., coming from
     different sources."""
     import os

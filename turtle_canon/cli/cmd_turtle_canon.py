@@ -1,14 +1,14 @@
 """Command line interface (CLI) for running `turtle-canon`."""
-# pylint: disable=import-outside-toplevel
+from __future__ import annotations
+
 import argparse
 import logging
-from pathlib import Path
 import sys
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
     from dataclasses import dataclass
-    from typing import List, Optional
 
     @dataclass
     class CLIArgs:
@@ -17,13 +17,13 @@ if TYPE_CHECKING:  # pragma: no cover
         version: str
         log_level: str
         fail_fast: bool
-        turtle_files: List[Path]
+        turtle_files: list[Path]
 
 
 LOGGING_LEVELS = [logging.getLevelName(level).lower() for level in range(0, 51, 10)]
 
 
-def main(args: "Optional[List[str]]" = None) -> None:
+def main(args: list[str] | None = None) -> None:
     """Turtle Canon - It's turtles all the way down."""
     from turtle_canon import __version__
     from turtle_canon.canon import canonize
@@ -70,7 +70,7 @@ def main(args: "Optional[List[str]]" = None) -> None:
         metavar="TURTLE_FILE",
     )
 
-    args: "CLIArgs" = parser.parse_args(args)  # type: ignore[assignment]
+    args: CLIArgs = parser.parse_args(args)  # type: ignore[assignment]
 
     cache = utils.Cache()
 

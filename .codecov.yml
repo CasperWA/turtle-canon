@@ -10,7 +10,7 @@ coverage:
 
   status:
     project:
-      default: off
+      default: false
       turtle-canon:
         threshold: 1%
         flags:

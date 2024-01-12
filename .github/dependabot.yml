@@ -6,11 +6,13 @@ updates:
     interval: weekly
     day: monday
     time: "05:00"
-  # Should be bigger than or equal to the total number of dependencies (currently 18)
-  open-pull-requests-limit: 30
+  # Should be bigger than or equal to the total number of dependencies (currently 11)
+  open-pull-requests-limit: 15
   target-branch: ci/dependabot-updates
   labels:
   - dependencies
+  - "CI/CD"
+  - skip_changelog
 - package-ecosystem: github-actions
   directory: "/"
   schedule:
@@ -19,3 +21,4 @@ updates:
   target-branch: ci/dependabot-updates
   labels:
   - "CI/CD"
+  - skip_changelog

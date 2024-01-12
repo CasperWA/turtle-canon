@@ -16,19 +16,19 @@ The main use case for developing this tool is when developing ontologies utilizi
 
 ## Install
 
-The tool is written for Python 3.9, so one needs at minimum Python 3.9 installed to run it at this stage.
+The tool is written for Python 3.10, so one needs at minimum Python 3.10 installed to run it at this stage.
 The plan is to make a stand-alone executable for each of the major OS'.
 
 Install via PyPI (stable version, recommended):
 
 ```shell
-python3.9 -m pip install turtle-canon
+python3.10 -m pip install turtle-canon
 ```
 
 Install via GitHub (development version):
 
 ```shell
-python3.9 -m pip install git+https://github.com/CasperWA/turtle-canon#egg=turtle-canon
+python3.10 -m pip install git+https://github.com/CasperWA/turtle-canon#egg=turtle-canon
 ```
 
 ## Usage
