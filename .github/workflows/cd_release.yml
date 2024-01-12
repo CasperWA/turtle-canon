@@ -22,6 +22,7 @@ jobs:
       install_extras: "[dev]"
       python_version_build: "3.10"
       version_update_changes: |
+        {package_dir}/__init__.py,__version__ *= *(?:'|\").*\(?:'|\"),__version__ = \"{version}\"
         README.md,latest stable version is \*\*.*\*\*\.,latest stable version is **{version}**.
         docs/index.md,latest stable version is \*\*.*\*\*\.,latest stable version is **{version}**.
       build_libs: build
