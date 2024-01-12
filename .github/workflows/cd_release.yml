@@ -22,10 +22,10 @@ jobs:
       install_extras: "[dev]"
       python_version_build: "3.10"
       version_update_changes: |
-        "README.md,latest stable version is \*\*.*\*\*\.,latest stable version is **{version}**."
+        README.md,latest stable version is \*\*.*\*\*\.,latest stable version is **{version}**.
       build_libs: build
       build_cmd: "python -m build"
-      changelog_exclude_labels: "skip_changelog,duplicate,question,invalid,wontfix"
+      changelog_exclude_labels: skip_changelog,duplicate,question,invalid,wontfix
       publish_on_pypi: false
 
       # Documentation
