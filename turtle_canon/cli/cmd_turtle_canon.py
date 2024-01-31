@@ -1,4 +1,5 @@
 """Command line interface (CLI) for running `turtle-canon`."""
+
 from __future__ import annotations
 
 import argparse
