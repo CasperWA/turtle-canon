@@ -5,6 +5,7 @@
     Instead, they are `Exception`s that will be caught and treated specially by the CLI.
 
 """
+
 from __future__ import annotations
 
 

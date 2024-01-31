@@ -1,4 +1,5 @@
 """PyTest fixtures for the CLI (`turtle_canon.cli`)."""
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -20,8 +21,7 @@ if TYPE_CHECKING:
             expected_error: str | None = None,
             run_dir: Path | str | None = None,
             use_subprocess: bool = True,
-        ) -> CalledProcessError | CLIOutput | CompletedProcess:
-            ...
+        ) -> CalledProcessError | CLIOutput | CompletedProcess: ...
 
 
 class CLIOutput(NamedTuple):
@@ -90,9 +90,11 @@ def clirunner(request: pytest.FixtureRequest) -> CLIRunner:
                     args=["turtle-canon", *options],
                     capture_output=True,
                     check=True,
-                    cwd=run_dir.name
-                    if isinstance(run_dir, TemporaryDirectory)
-                    else run_dir,
+                    cwd=(
+                        run_dir.name
+                        if isinstance(run_dir, TemporaryDirectory)
+                        else run_dir
+                    ),
                     text=True,
                 )
                 if expected_error:
@@ -135,9 +137,12 @@ def clirunner(request: pytest.FixtureRequest) -> CLIRunner:
                         if isinstance(run_dir, TemporaryDirectory)
                         else run_dir
                     )
-                    with stdout_path.open("w") as stdout, stderr_path.open(
-                        "w"
-                    ) as stderr, redirect_stdout(stdout), redirect_stderr(stderr):
+                    with (
+                        stdout_path.open("w") as stdout,
+                        stderr_path.open("w") as stderr,
+                        redirect_stdout(stdout),
+                        redirect_stderr(stderr),
+                    ):
                         cli(options if options else None)
                 except SystemExit as exit_:
                     output = CLIOutput(

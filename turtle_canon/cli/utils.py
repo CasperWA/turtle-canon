@@ -1,4 +1,5 @@
 """Utility functions for `turtle-canon` CLI."""
+
 from __future__ import annotations
 
 import sys

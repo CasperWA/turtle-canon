@@ -1,4 +1,5 @@
 """Test `turtle_canon.cli.cmd_turtle_canon` aka. the `turtle-canon` CLI."""
+
 from __future__ import annotations
 
 from pathlib import Path
