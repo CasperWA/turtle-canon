@@ -18,7 +18,7 @@ repos:
     exclude: ^.*\.ttl$
 
 - repo: https://github.com/ambv/black
-  rev: 24.1.1
+  rev: 24.2.0
   hooks:
   - id: black
 
@@ -31,7 +31,7 @@ repos:
   - id: docs-landing-page
 
 - repo: https://github.com/astral-sh/ruff-pre-commit
-  rev: v0.1.15
+  rev: v0.2.1
   hooks:
   - id: ruff
     args:
