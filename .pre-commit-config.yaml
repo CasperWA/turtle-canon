@@ -18,7 +18,7 @@ repos:
     exclude: ^.*\.ttl$
 
 - repo: https://github.com/ambv/black
-  rev: 24.4.2
+  rev: 24.8.0
   hooks:
   - id: black
 
@@ -31,7 +31,7 @@ repos:
   - id: docs-landing-page
 
 - repo: https://github.com/astral-sh/ruff-pre-commit
-  rev: v0.5.5
+  rev: v0.5.6
   hooks:
   - id: ruff
     args:
@@ -52,7 +52,7 @@ repos:
     exclude: ^tests/.*$
 
 - repo: https://github.com/pre-commit/mirrors-mypy
-  rev: v1.11.0
+  rev: v1.11.1
   hooks:
   - id: mypy
     exclude: ^tests/.*$
