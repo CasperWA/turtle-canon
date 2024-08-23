@@ -17,7 +17,7 @@ def top_dir() -> Path:
     return Path(__file__).resolve().parent.parent
 
 
-@pytest.fixture()
+@pytest.fixture
 def simple_turtle_file(top_dir: Path) -> Path:
     """Load and return `Path` object to a simple Turtle file."""
     import os
@@ -39,7 +39,7 @@ def simple_turtle_file(top_dir: Path) -> Path:
         )
 
 
-@pytest.fixture()
+@pytest.fixture
 def single_turtle_permutations(top_dir: Path) -> list[Path]:
     """Yield list of a single turtle file and permutations of it.
 
@@ -66,7 +66,7 @@ def single_turtle_permutations(top_dir: Path) -> list[Path]:
         )
 
 
-@pytest.fixture()
+@pytest.fixture
 def tmp_dir() -> Path:
     """Open and yield a temporary directory."""
     import os
@@ -83,7 +83,7 @@ def tmp_dir() -> Path:
         )
 
 
-@pytest.fixture()
+@pytest.fixture
 def different_sources_ontologies(top_dir: Path) -> list[Path]:
     """Yield list of Turtle files generated using different tools, i.e., coming from
     different sources."""
