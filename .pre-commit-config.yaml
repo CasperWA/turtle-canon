@@ -23,7 +23,7 @@ repos:
   - id: black
 
 - repo: https://github.com/SINTEF/ci-cd
-  rev: v2.8.0
+  rev: v2.8.2
   hooks:
   - id: docs-api-reference
     args:
@@ -31,7 +31,7 @@ repos:
   - id: docs-landing-page
 
 - repo: https://github.com/astral-sh/ruff-pre-commit
-  rev: v0.6.1
+  rev: v0.6.3
   hooks:
   - id: ruff
     args:
@@ -52,7 +52,7 @@ repos:
     exclude: ^tests/.*$
 
 - repo: https://github.com/pre-commit/mirrors-mypy
-  rev: v1.11.1
+  rev: v1.11.2
   hooks:
   - id: mypy
     exclude: ^tests/.*$
