@@ -56,7 +56,7 @@ jobs:
           cp ${{ steps.config.outputs.core_test_ontology_file }} ${{ steps.config.outputs.temp_filepath }}
           turtle-canon "${{ steps.config.outputs.temp_filepath }}"
 
-          DIFF=$(diff ${TEMP_FILEPATH} ${CANONIZED_FILEPATH})
+          DIFF=$(diff ${{ steps.config.outputs.temp_filepath }} ${{ steps.config.outputs.canonized_filepath }})
           if [ "$DIFF" != "" ]; then
             echo "The existing canonized test file for RDFlib version ${{ steps.config.outputs.rdflib_version }} differs from the currently generated one using the same version !"
             echo -e "Diff:\n${DIFF}"
