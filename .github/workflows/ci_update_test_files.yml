@@ -1,0 +1,74 @@
+name: CI - Update RDFLib canonized test files
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'pyproject.toml'
+
+jobs:
+  check-rdflib-test-files:
+    name: Update RDFLib canonized test files
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -U setuptools wheel
+          pip install -U .
+
+      - name: Configuration
+        id: config
+        run: |
+          RDFLIB_VERSION=$(python -c 'import rdflib; print(rdflib.__version__)')
+          CANONIZED_FILENAME="turtle_canon_tests_canonized_${RDFLIB_VERSION}.ttl"
+
+          echo "rdflib_version=${RDFLIB_VERSION}" >> $GITHUB_OUTPUT
+          echo "canonized_filepath=${{ github.workspace }}/tests/static/rdflib_canonized/${CANONIZED_FILENAME}" >> $GITHUB_OUTPUT
+          echo "core_test_ontology_file=${{ github.workspace }}/tests/static/turtle_canon_tests.ttl" >> $GITHUB_OUTPUT
+
+          echo "temp_filepath="/tmp/${CANONIZED_FILENAME}" >> $GITHUB_OUTPUT
+
+      - name: Check if canonized file exists
+        id: file_exists
+        run: |
+          if [ -f "${{ steps.config.outputs.canonized_filepath }}" ]; then
+            CANONIZED_FILE_EXISTS=true
+          else
+            CANONIZED_FILE_EXISTS=false
+          fi
+
+          echo "Canonized file exists: ${CANONIZED_FILE_EXISTS}"
+          echo "canonized_file_exists=${CANONIZED_FILE_EXISTS}" >> $GITHUB_OUTPUT
+
+      - name: Check content of canonized file
+        if: steps.file_exists.outputs.canonized_file_exists == 'true'
+        run: |
+          cp ${{ steps.config.outputs.core_test_ontology_file }} ${{ steps.config.outputs.temp_filepath }}
+          turtle-canon "${{ steps.config.outputs.temp_filepath }}"
+
+          DIFF=$(diff ${TEMP_FILEPATH} ${CANONIZED_FILEPATH})
+          if [ "$DIFF" != "" ]; then
+            echo "The existing canonized test file for RDFlib version ${{ steps.config.outputs.rdflib_version }} differs from the currently generated one using the same version !"
+            echo -e "Diff:\n${DIFF}"
+            rm -f "${{ steps.config.outputs.temp_filepath }}"
+            exit 1
+          else
+            echo "Canonized test file for RDFlib version ${{ steps.config.outputs.rdflib_version }} is up-to-date, nothing to do."
+            rm -f "${{ steps.config.outputs.temp_filepath }}"
+          fi
+
+      - name: Generate new canonized file
+        if: steps.file_exists.outputs.canonized_file_exists == 'false'
+        run: |
+          cp ${{ steps.config.outputs.core_test_ontology_file }} ${{ steps.config.outputs.canonized_filepath }}
+          turtle-canon "${{ steps.config.outputs.canonized_filepath }}"
