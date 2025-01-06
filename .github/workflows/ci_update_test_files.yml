@@ -29,14 +29,14 @@ jobs:
       - name: Configuration
         id: config
         run: |
-          RDFLIB_VERSION=$(python -c 'import rdflib; print(rdflib.__version__)')
+          RDFLIB_VERSION="$(python -c 'import rdflib; print(rdflib.__version__)')"
           CANONIZED_FILENAME="turtle_canon_tests_canonized_${RDFLIB_VERSION}.ttl"
 
           echo "rdflib_version=${RDFLIB_VERSION}" >> $GITHUB_OUTPUT
           echo "canonized_filepath=${{ github.workspace }}/tests/static/rdflib_canonized/${CANONIZED_FILENAME}" >> $GITHUB_OUTPUT
           echo "core_test_ontology_file=${{ github.workspace }}/tests/static/turtle_canon_tests.ttl" >> $GITHUB_OUTPUT
 
-          echo "temp_filepath="/tmp/${CANONIZED_FILENAME}" >> $GITHUB_OUTPUT
+          echo "temp_filepath=/tmp/${CANONIZED_FILENAME}" >> $GITHUB_OUTPUT
 
       - name: Check if canonized file exists
         id: file_exists
@@ -56,7 +56,7 @@ jobs:
           cp ${{ steps.config.outputs.core_test_ontology_file }} ${{ steps.config.outputs.temp_filepath }}
           turtle-canon "${{ steps.config.outputs.temp_filepath }}"
 
-          DIFF=$(diff ${TEMP_FILEPATH} ${CANONIZED_FILEPATH})
+          DIFF=$(diff ${{ steps.config.outputs.temp_filepath }} ${{ steps.config.outputs.canonized_filepath }})
           if [ "$DIFF" != "" ]; then
             echo "The existing canonized test file for RDFlib version ${{ steps.config.outputs.rdflib_version }} differs from the currently generated one using the same version !"
             echo -e "Diff:\n${DIFF}"
