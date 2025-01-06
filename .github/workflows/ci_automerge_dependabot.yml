@@ -13,6 +13,9 @@ jobs:
       perform_changes: true
       git_username: CasperWA
       git_email: "casper.w.andersen@sintef.no"
-      changes: .github/utils/canonize_rdflib_test_file.sh
+      changes: |
+        #!/bin/bash
+
+        ./.github/utils/canonize_rdflib_test_file.sh
     secrets:
       PAT: ${{ secrets.RELEASE_PAT }}
