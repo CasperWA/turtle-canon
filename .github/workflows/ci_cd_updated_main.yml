@@ -16,8 +16,7 @@ jobs:
       default_repo_branch: main
 
       # Update dependency branch
-      update_dependencies_branch: true
-      permanent_dependencies_branch: "ci/dependabot-updates"
+      update_dependencies_branch: false
 
       # Update documentation
       update_docs: true
