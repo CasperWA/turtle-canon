@@ -21,7 +21,7 @@ jobs:
         RDFLIB_VERSION="$(python -c 'import rdflib; print(rdflib.__version__)')"
         CANONIZED_FILENAME="turtle_canon_tests_canonized_${RDFLIB_VERSION}.ttl"
         CANONIZED_FILEPATH="${{ github.workspace }}/tests/static/rdflib_canonized/${CANONIZED_FILENAME}"
-        CORE_TEST_ONTOLOGY_FILE="${{ github.workspace }}/tests/static/rdflib_canon_tests.ttl"
+        CORE_TEST_ONTOLOGY_FILE="${{ github.workspace }}/tests/static/turtle_canon_tests.ttl"
 
         if [ -f "${CANONIZED_FILEPATH}" ]; then
           echo "Canonized test file for RDFlib version ${RDFLIB_VERSION} already exists, checking contents..."
