@@ -45,12 +45,12 @@ docs = [
     "mkdocs-awesome-pages-plugin~=2.9",
     "mkdocs-material~=9.5",
     "mkdocs-minify-plugin~=0.8.0",
-    "mkdocstrings[python]~=0.26.0",
+    "mkdocstrings[python]~=0.27.0",
 ]
 dev = [
     "pre-commit~=4.0",
     "pytest~=8.0",
-    "pytest-cov~=5.0",
+    "pytest-cov~=6.0",
     "turtle-canon[docs]",
 ]
 
