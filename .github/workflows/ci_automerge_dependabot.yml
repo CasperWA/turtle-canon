@@ -1,4 +1,4 @@
-name: CI - Activate auto-merging for dependencies PRs
+name: CI - Activate auto-merging for bot PRs
 
 on:
   pull_request_target:
@@ -10,12 +10,7 @@ jobs:
     uses: SINTEF/ci-cd/.github/workflows/ci_automerge_prs.yml@v2.8.2
     if: github.repository_owner == 'CasperWA' && ( ( startsWith(github.event.pull_request.head.ref, 'dependabot/') && github.actor == 'dependabot[bot]' ) || ( github.event.pull_request.head.ref == 'pre-commit-ci-update-config' && github.actor == 'pre-commit-ci[bot]' ) )
     with:
-      perform_changes: true
       git_username: CasperWA
       git_email: "casper.w.andersen@sintef.no"
-      changes: |
-        #!/bin/bash
-
-        ./.github/utils/canonize_rdflib_test_file.sh
     secrets:
       PAT: ${{ secrets.RELEASE_PAT }}
