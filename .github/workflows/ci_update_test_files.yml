@@ -17,6 +17,7 @@ jobs:
         with:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.ref || github.ref }}
+          token: ${{ secrets.RELEASE_PAT }}
 
       - name: Set up Python 3.10
         uses: actions/setup-python@v5
@@ -93,7 +94,7 @@ jobs:
         if: steps.file_exists.outputs.canonized_file_exists == 'false' && github.event_name == 'workflow_dispatch'
         uses: peter-evans/create-pull-request@v7
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.RELEASE_PAT }}
           commit-message: "Update canonized test file for RDFlib version ${{ steps.config.outputs.rdflib_version }}"
           title: "[AUTO] Update test file - RDFlib v${{ steps.config.outputs.rdflib_version }}"
           body: "## Update canonized test file\n\nThis PR updates the canonized test file for RDFlib version ${{ steps.config.outputs.rdflib_version }}."
