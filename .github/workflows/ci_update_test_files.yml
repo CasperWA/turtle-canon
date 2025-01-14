@@ -74,6 +74,17 @@ jobs:
           cp ${{ steps.config.outputs.core_test_ontology_file }} ${{ steps.config.outputs.canonized_filepath }}
           turtle-canon "${{ steps.config.outputs.canonized_filepath }}"
 
+      - name: Commit and push files
+        if: steps.file_exists.outputs.canonized_file_exists == 'false'
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add ${{ steps.config.outputs.relative_canonized_filepath }}
+          git commit -m "Update canonized test file for RDFlib version ${{ steps.config.outputs.rdflib_version }}"
+
+          git push
+
       - name: Create PR (if manual trigger)
         if: steps.file_exists.outputs.canonized_file_exists == 'false' && github.event_name == 'workflow_dispatch'
         uses: peter-evans/create-pull-request@v7
