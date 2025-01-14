@@ -3,8 +3,8 @@ name: CI - Update RDFLib canonized test files
 on:
   pull_request:
     branches: [main]
-    paths:
-      - 'pyproject.toml'
+    types: [opened, reopened, synchronize]
+  workflow_dispatch:
 
 jobs:
   check-rdflib-test-files:
@@ -14,6 +14,10 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.ref || github.ref }}
+          token: ${{ secrets.RELEASE_PAT }}
 
       - name: Set up Python 3.10
         uses: actions/setup-python@v5
@@ -31,10 +35,12 @@ jobs:
         run: |
           RDFLIB_VERSION="$(python -c 'import rdflib; print(rdflib.__version__)')"
           CANONIZED_FILENAME="turtle_canon_tests_canonized_${RDFLIB_VERSION}.ttl"
+          RELATIVE_CANONIZED_FILEPATH="tests/static/rdflib_canonized/${CANONIZED_FILENAME}"
 
           echo "rdflib_version=${RDFLIB_VERSION}" >> $GITHUB_OUTPUT
-          echo "canonized_filepath=${{ github.workspace }}/tests/static/rdflib_canonized/${CANONIZED_FILENAME}" >> $GITHUB_OUTPUT
+          echo "canonized_filepath=${{ github.workspace }}/${RELATIVE_CANONIZED_FILEPATH}" >> $GITHUB_OUTPUT
           echo "core_test_ontology_file=${{ github.workspace }}/tests/static/turtle_canon_tests.ttl" >> $GITHUB_OUTPUT
+          echo "relative_canonized_filepath=${RELATIVE_CANONIZED_FILEPATH}" >> $GITHUB_OUTPUT
 
           echo "temp_filepath=/tmp/${CANONIZED_FILENAME}" >> $GITHUB_OUTPUT
 
@@ -72,3 +78,29 @@ jobs:
         run: |
           cp ${{ steps.config.outputs.core_test_ontology_file }} ${{ steps.config.outputs.canonized_filepath }}
           turtle-canon "${{ steps.config.outputs.canonized_filepath }}"
+
+      - name: Commit and push files
+        if: steps.file_exists.outputs.canonized_file_exists == 'false' && github.event_name == 'pull_request'
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add ${{ steps.config.outputs.relative_canonized_filepath }}
+          git commit -m "Update canonized test file for RDFlib version ${{ steps.config.outputs.rdflib_version }}"
+
+          git push
+
+      - name: Create PR (if manual trigger)
+        if: steps.file_exists.outputs.canonized_file_exists == 'false' && github.event_name == 'workflow_dispatch'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.RELEASE_PAT }}
+          commit-message: "Update canonized test file for RDFlib version ${{ steps.config.outputs.rdflib_version }}"
+          title: "[AUTO] Update test file - RDFlib v${{ steps.config.outputs.rdflib_version }}"
+          body: "## Update canonized test file\n\nThis PR updates the canonized test file for RDFlib version ${{ steps.config.outputs.rdflib_version }}."
+          branch: "ci/update-rdflib-canonized-test-file-${{ steps.config.outputs.rdflib_version }}"
+          labels: CI/CD,dependencies
+          reviewers: "CasperWA"
+          delete-branch: true
+          sign-commits: true
+          add-paths: ${{ steps.config.outputs.relative_canonized_filepath }}
