@@ -87,7 +87,7 @@ jobs:
           git add ${{ steps.config.outputs.relative_canonized_filepath }}
           git commit -m "Update canonized test file for RDFlib version ${{ steps.config.outputs.rdflib_version }}"
 
-          git push -u origin ci/update-rdflib-canonized-test-file-${{ steps.config.outputs.rdflib_version }}
+          git push
 
       - name: Create PR (if manual trigger)
         if: steps.file_exists.outputs.canonized_file_exists == 'false' && github.event_name == 'workflow_dispatch'
