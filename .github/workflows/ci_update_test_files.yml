@@ -71,3 +71,29 @@ jobs:
         run: |
           cp ${{ steps.config.outputs.core_test_ontology_file }} ${{ steps.config.outputs.canonized_filepath }}
           turtle-canon "${{ steps.config.outputs.canonized_filepath }}"
+          echo "Generated canonized test file for RDFlib version ${{ steps.config.outputs.rdflib_version }}.""
+
+      - name: Commit and push changes (if pull request)
+        if: steps.file_exists.outputs.canonized_file_exists == 'false' && github.event_name == 'pull_request'
+        run: |
+          git config --global user.email "actions@github.com"
+          git config --global user.name "${{ github.actor }}"
+
+          git add ${{ steps.config.outputs.canonized_filepath }}
+          git commit -m "Update canonized test file for RDFlib version ${{ steps.config.outputs.rdflib_version }}"
+
+          git push
+
+      - name: Create PR (if manual trigger)
+        if: steps.file_exists.outputs.canonized_file_exists == 'false' && github.event_name == 'workflow_dispatch'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "Update canonized test file for RDFlib version ${{ steps.config.outputs.rdflib_version }}"
+          title: "[AUTO] Update test file - RDFlib v${{ steps.config.outputs.rdflib_version }}"
+          body: "## Update canonized test file\n\nThis PR updates the canonized test file for RDFlib version ${{ steps.config.outputs.rdflib_version }}."
+          branch: "update-rdflib-canonized-test-file-${{ steps.config.outputs.rdflib_version }}"
+          base: "main"
+          labels: CI/CD,dependencies
+          reviewers: "CasperWA"
+          draft: false
