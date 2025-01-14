@@ -3,6 +3,7 @@ name: CI - Update RDFLib canonized test files
 on:
   pull_request:
     branches: [main]
+    types: [opened, reopened, synchronize]
   workflow_dispatch:
 
 jobs:
@@ -13,6 +14,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.ref || github.ref }}
 
       - name: Set up Python 3.10
         uses: actions/setup-python@v5
@@ -83,7 +87,7 @@ jobs:
           git add ${{ steps.config.outputs.relative_canonized_filepath }}
           git commit -m "Update canonized test file for RDFlib version ${{ steps.config.outputs.rdflib_version }}"
 
-          git push
+          git push -u origin ci/update-rdflib-canonized-test-file-${{ steps.config.outputs.rdflib_version }}
 
       - name: Create PR (if manual trigger)
         if: steps.file_exists.outputs.canonized_file_exists == 'false' && github.event_name == 'workflow_dispatch'
