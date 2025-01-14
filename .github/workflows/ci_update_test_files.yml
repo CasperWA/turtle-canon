@@ -75,7 +75,7 @@ jobs:
           turtle-canon "${{ steps.config.outputs.canonized_filepath }}"
 
       - name: Commit and push files
-        if: steps.file_exists.outputs.canonized_file_exists == 'false'
+        if: steps.file_exists.outputs.canonized_file_exists == 'false' && github.event_name == 'pull_request'
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
