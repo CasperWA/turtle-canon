@@ -72,8 +72,6 @@ plugins:
             members: null
             inherited_members: false
             docstring_style: google
-            docstring_options:
-              replace_admonitions: true
   - awesome-pages
 
 watch:

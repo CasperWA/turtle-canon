@@ -17,6 +17,7 @@ def canonize(turtle_file: Path | str) -> Path | None:
     """The main function for running `turtle-canon`.
 
     Workflow:
+
     - **Validate** Turtle file.
       Check the file integrity, readability, writeability and content.
     - **Parse** and **sort** Turtle file's triples.
