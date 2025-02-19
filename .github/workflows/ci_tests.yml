@@ -102,8 +102,18 @@ jobs:
           - "~=4.0"
         python-version: ["3.10", "3.11", "3.12", "3.13"]
         exclude:
-          - pre-commit-version: ["==1.15.0", "~=1.0"]
-            python-version: ["3.11", "3.12", "3.13"]
+          - pre-commit-version: "==1.15.0"
+            python-version: "3.11"
+          - pre-commit-version: "==1.15.0"
+            python-version: "3.12"
+          - pre-commit-version: "==1.15.0"
+            python-version: "3.13"
+          - pre-commit-version: "~=1.0"
+            python-version: "3.11"
+          - pre-commit-version: "~=1.0"
+            python-version: "3.12"
+          - pre-commit-version: "~=1.0"
+            python-version: "3.13"
 
     steps:
     - name: Checkout repository
