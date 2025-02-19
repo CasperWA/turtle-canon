@@ -6,10 +6,12 @@ on:
     - published
 
 jobs:
-  publish-docs:
+  build:
     name: External
     uses: SINTEF/ci-cd/.github/workflows/cd_release.yml@v2.9.0
     if: github.repository == 'CasperWA/turtle-canon' && startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      contents: write
     with:
       # General
       git_username: CasperWA
@@ -29,6 +31,7 @@ jobs:
       build_cmd: "python -m build"
       changelog_exclude_labels: skip_changelog,duplicate,question,invalid,wontfix
       publish_on_pypi: false
+      upload_distribution: true
 
       # Documentation
       update_docs: true
@@ -39,3 +42,27 @@ jobs:
 
     secrets:
       PAT: ${{ secrets.RELEASE_PAT }}
+
+  publish:
+    name: Publish to PyPI
+    needs: build
+    runs-on: ubuntu-latest
+
+    environment:
+      name: release
+      url: https://pypi.org/project/turtle-canon
+
+    # The id-token:write permission is required by the PyPI upload action for
+    # Trusted Publishers
+    permissions:
+      id-token: write
+
+    steps:
+      - name: Download distribution
+        uses: actions/download-artifact@v4
+        with:
+          name: dist  # The artifact will always be called 'dist'
+          path: dist
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
