@@ -49,14 +49,19 @@ jobs:
   pytest:
     runs-on: ubuntu-latest
 
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: Set up Python 3.10
+    - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v5
       with:
-        python-version: "3.10"
+        python-version: ${{ matrix.python-version }}
 
     - name: Install python dependencies
       run: |
@@ -78,10 +83,10 @@ jobs:
         flags: turtle-canon
       env:
         OS: ubuntu-latest
-        PYTHON: "3.10"
+        PYTHON: ${{ matrix.python-version }}
 
   as-pre-commit-hook:
-    name: As a pre-commit hook (pre-commit ${{ matrix.pre-commit-version }})
+    name: As a pre-commit hook (py ${{ matrix.python-version }}, pre-commit ${{ matrix.pre-commit-version }})
     runs-on: ubuntu-latest
 
     strategy:
@@ -93,15 +98,30 @@ jobs:
           - "~=1.0"
           - "~=2.0"
           - "~=3.0"
+          - "~=4.0"
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
+        exclude:
+          - pre-commit-version: "==1.15.0"
+            python-version: "3.11"
+          - pre-commit-version: "==1.15.0"
+            python-version: "3.12"
+          - pre-commit-version: "==1.15.0"
+            python-version: "3.13"
+          - pre-commit-version: "~=1.0"
+            python-version: "3.11"
+          - pre-commit-version: "~=1.0"
+            python-version: "3.12"
+          - pre-commit-version: "~=1.0"
+            python-version: "3.13"
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: Set up Python 3.10
+    - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v5
       with:
-        python-version: "3.10"
+        python-version: ${{ matrix.python-version }}
 
     - name: Install dependencies
       run: |

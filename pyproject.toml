@@ -24,6 +24,9 @@ classifiers = [
     "Natural Language :: English",
     "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: Software Development",
     "Topic :: Software Development :: Pre-processors",
     "Topic :: Software Development :: Testing",
@@ -31,7 +34,7 @@ classifiers = [
     "Topic :: Text Processing",
     "Topic :: Utilities",
 ]
-requires-python = ">=3.10,<3.11"
+requires-python = "~=3.10"
 dynamic = ["version"]
 
 dependencies = [
@@ -73,12 +76,11 @@ line-length = 88
 target-version = ['py310']
 
 [tool.pytest.ini_options]
-minversion = "7.4"
+minversion = "8.0"
 addopts = "-rs --cov=turtle_canon --cov-report=term-missing:skip-covered --no-cov-on-fail"
 filterwarnings = [
+    # Treat all warnings as errors
     "error",
-    # "ignore:.*imp module.*:DeprecationWarning",
-    # "ignore:.*invalid escape sequence.*:DeprecationWarning",
 ]
 
 [tool.mypy]
@@ -116,7 +118,6 @@ extend-select = [
 ]
 ignore = [
   "PLR",  # Design related pylint codes
-#   "B008",  # Performing function calls in argument defaults - done all the time in the CLI.
 ]
 isort.required-imports = ["from __future__ import annotations"]
 

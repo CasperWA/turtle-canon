@@ -3,7 +3,7 @@
   description: "Turtle Canon: A tool for canonizing Turtle (`.ttl`) ontology files."
   entry: turtle-canon
   language: python
-  language_version: python3.10
+  language_version: python3
   minimum_pre_commit_version: "1.15.0"
   require_serial: true
   files: \.ttl$
