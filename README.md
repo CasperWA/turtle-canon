@@ -42,7 +42,7 @@ turtle-canon path/to/my_ontology_file.ttl
 For more information about the tool and the options available, run `turtle-canon --help`.  
 To check the version run `turtle-canon --version`.
 
-The currently latest stable version is **0.1.0**.
+The currently latest stable version is **0.1.1**.
 
 ## License & copyright
 
