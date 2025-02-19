@@ -93,8 +93,7 @@ jobs:
       fail-fast: false
       matrix:
         pre-commit-version:
-          # minimum pre-commit version for turtle-canon
-          - "==1.15.0"
+          - "==1.15.0"  # minimum pre-commit version for turtle-canon
           # latest major versions
           - "~=1.0"
           - "~=2.0"
