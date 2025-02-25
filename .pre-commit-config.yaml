@@ -37,7 +37,7 @@ repos:
   - id: black
 
 - repo: https://github.com/SINTEF/ci-cd
-  rev: v2.9.0
+  rev: v2.9.1
   hooks:
   - id: docs-api-reference
     args:
@@ -45,7 +45,7 @@ repos:
   - id: docs-landing-page
 
 - repo: https://github.com/astral-sh/ruff-pre-commit
-  rev: v0.9.6
+  rev: v0.9.7
   hooks:
   - id: ruff
     args:
