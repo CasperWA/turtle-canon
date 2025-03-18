@@ -13,7 +13,6 @@ if TYPE_CHECKING:
 
 def test_repetitivity(simple_turtle_file: Path) -> None:
     """Ensure firing the Turtle Canon multiple times renders the same result."""
-    from os import listdir
     from shutil import copy
 
     from turtle_canon.canon import canonize
@@ -34,7 +33,7 @@ def test_repetitivity(simple_turtle_file: Path) -> None:
         )
         for j in range(i - 1):
             canonize(simple_turtle_file.with_stem(f"{simple_turtle_file.stem}_{j}"))
-            for turtle_file_copy in listdir(tmp_dir):
+            for turtle_file_copy in Path(tmp_dir).iterdir():
                 assert simple_turtle_file_content == (
                     Path(tmp_dir) / turtle_file_copy
                 ).read_text(encoding="utf8")

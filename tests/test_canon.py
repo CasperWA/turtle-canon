@@ -88,7 +88,6 @@ def test_export_ontology_failed_export(tmp_dir: Path) -> None:
 
 def test_export_ontology(top_dir: Path, tmp_dir: Path) -> None:
     """Test `export_ontology()` runs."""
-    import os
     import re
     import shutil
 
@@ -107,7 +106,7 @@ def test_export_ontology(top_dir: Path, tmp_dir: Path) -> None:
         pytest.fail(
             "Couldn't find a canonized turtle file for RDFlib version "
             f"{rdflib_version} in {rdflib_canonized_dir}\nContent:\n"
-            f"{os.listdir(rdflib_canonized_dir)}"
+            f"{list(Path(rdflib_canonized_dir).iterdir())}"
         )
 
     editable_turtle_file = tmp_dir / turtle_file.name
