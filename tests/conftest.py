@@ -20,7 +20,6 @@ def top_dir() -> Path:
 @pytest.fixture
 def simple_turtle_file(top_dir: Path) -> Path:
     """Load and return `Path` object to a simple Turtle file."""
-    import os
     from shutil import copy
     from tempfile import TemporaryDirectory
 
@@ -35,7 +34,7 @@ def simple_turtle_file(top_dir: Path) -> Path:
         tmpdir.cleanup()
         assert not Path(tmpdir.name).exists(), (
             f"Failed to remove temporary directory at {tmpdir.name}. "
-            f"Content:\n{os.listdir(tmpdir.name)}"
+            f"Content:\n{list(Path(tmpdir.name).iterdir())}"
         )
 
 
@@ -45,7 +44,6 @@ def single_turtle_permutations(top_dir: Path) -> list[Path]:
 
     The permutations are restructuring of the list of classes.
     """
-    import os
     from shutil import copy
     from tempfile import TemporaryDirectory
 
@@ -62,14 +60,13 @@ def single_turtle_permutations(top_dir: Path) -> list[Path]:
         tmpdir.cleanup()
         assert not Path(tmpdir.name).exists(), (
             f"Failed to remove temporary directory at {tmpdir.name}. "
-            f"Content:\n{os.listdir(tmpdir.name)}"
+            f"Content:\n{list(Path(tmpdir.name).iterdir())}"
         )
 
 
 @pytest.fixture
 def tmp_dir() -> Path:
     """Open and yield a temporary directory."""
-    import os
     from tempfile import TemporaryDirectory
 
     try:
@@ -79,7 +76,7 @@ def tmp_dir() -> Path:
         tmpdir.cleanup()
         assert not Path(tmpdir.name).exists(), (
             f"Failed to remove temporary directory at {tmpdir.name}. "
-            f"Content:\n{os.listdir(tmpdir.name)}"
+            f"Content:\n{list(Path(tmpdir.name).iterdir())}"
         )
 
 
@@ -87,7 +84,6 @@ def tmp_dir() -> Path:
 def different_sources_ontologies(top_dir: Path) -> list[Path]:
     """Yield list of Turtle files generated using different tools, i.e., coming from
     different sources."""
-    import os
     from shutil import copy
     from tempfile import TemporaryDirectory
 
@@ -108,5 +104,5 @@ def different_sources_ontologies(top_dir: Path) -> list[Path]:
         tmpdir.cleanup()
         assert not Path(tmpdir.name).exists(), (
             f"Failed to remove temporary directory at {tmpdir.name}. "
-            f"Content:\n{os.listdir(tmpdir.name)}"
+            f"Content:\n{list(Path(tmpdir.name).iterdir())}"
         )
