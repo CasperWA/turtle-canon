@@ -48,7 +48,7 @@ docs = [
     "mkdocs-awesome-pages-plugin~=2.9",
     "mkdocs-material~=9.5",
     "mkdocs-minify-plugin~=0.8.0",
-    "mkdocstrings[python]>=0.29,<0.31",
+    "mkdocstrings[python]~=0.30.0",
 ]
 dev = [
     "pre-commit~=4.0",
