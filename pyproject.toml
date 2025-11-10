@@ -52,7 +52,7 @@ docs = [
 ]
 dev = [
     "pre-commit~=4.0",
-    "pytest~=8.0",
+    "pytest>=8,<10",
     "pytest-cov~=7.0",
     "turtle-canon[docs]",
 ]
