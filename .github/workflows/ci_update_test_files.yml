@@ -92,7 +92,7 @@ jobs:
 
       - name: Create PR (if manual trigger)
         if: steps.file_exists.outputs.canonized_file_exists == 'false' && github.event_name == 'workflow_dispatch'
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.RELEASE_PAT }}
           commit-message: "Update canonized test file for RDFlib version ${{ steps.config.outputs.rdflib_version }}"
