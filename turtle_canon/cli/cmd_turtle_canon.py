@@ -71,21 +71,21 @@ def main(args: list[str] | None = None) -> None:
         metavar="TURTLE_FILE",
     )
 
-    args: CLIArgs = parser.parse_args(args)  # type: ignore[assignment]
+    parsed_args: CLIArgs = parser.parse_args(args)  # type: ignore[assignment]
 
     cache = utils.Cache()
 
-    number_of_turtle_files = len(args.turtle_files)
+    number_of_turtle_files = len(parsed_args.turtle_files)
 
-    while args.turtle_files:
-        turtle_file = args.turtle_files.pop()
+    while parsed_args.turtle_files:
+        turtle_file = parsed_args.turtle_files.pop()
         changed_file = None
         try:
             changed_file = canonize(turtle_file)
             if changed_file:
                 cache.add_file(changed_file)
         except TurtleCanonException as exception:
-            if args.fail_fast:
+            if parsed_args.fail_fast:
                 utils.print_error(exception)
             else:
                 cache.add_error(exception)
