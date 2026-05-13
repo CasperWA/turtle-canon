@@ -139,21 +139,21 @@
         <span class=n>metavar</span><span class=o>=</span><span class=s2>&quot;TURTLE_FILE&quot;</span><span class=p>,</span>
     <span class=p>)</span>
 
-    <span class=n>args</span><span class=p>:</span> <span class=n>CLIArgs</span> <span class=o>=</span> <span class=n>parser</span><span class=o>.</span><span class=n>parse_args</span><span class=p>(</span><span class=n>args</span><span class=p>)</span>  <span class=c1># type: ignore[assignment]</span>
+    <span class=n>parsed_args</span><span class=p>:</span> <span class=n>CLIArgs</span> <span class=o>=</span> <span class=n>parser</span><span class=o>.</span><span class=n>parse_args</span><span class=p>(</span><span class=n>args</span><span class=p>)</span>  <span class=c1># type: ignore[assignment]</span>
 
     <span class=n>cache</span> <span class=o>=</span> <span class=n>utils</span><span class=o>.</span><span class=n>Cache</span><span class=p>()</span>
 
-    <span class=n>number_of_turtle_files</span> <span class=o>=</span> <span class=nb>len</span><span class=p>(</span><span class=n>args</span><span class=o>.</span><span class=n>turtle_files</span><span class=p>)</span>
+    <span class=n>number_of_turtle_files</span> <span class=o>=</span> <span class=nb>len</span><span class=p>(</span><span class=n>parsed_args</span><span class=o>.</span><span class=n>turtle_files</span><span class=p>)</span>
 
-    <span class=k>while</span> <span class=n>args</span><span class=o>.</span><span class=n>turtle_files</span><span class=p>:</span>
-        <span class=n>turtle_file</span> <span class=o>=</span> <span class=n>args</span><span class=o>.</span><span class=n>turtle_files</span><span class=o>.</span><span class=n>pop</span><span class=p>()</span>
+    <span class=k>while</span> <span class=n>parsed_args</span><span class=o>.</span><span class=n>turtle_files</span><span class=p>:</span>
+        <span class=n>turtle_file</span> <span class=o>=</span> <span class=n>parsed_args</span><span class=o>.</span><span class=n>turtle_files</span><span class=o>.</span><span class=n>pop</span><span class=p>()</span>
         <span class=n>changed_file</span> <span class=o>=</span> <span class=kc>None</span>
         <span class=k>try</span><span class=p>:</span>
             <span class=n>changed_file</span> <span class=o>=</span> <span class=n>canonize</span><span class=p>(</span><span class=n>turtle_file</span><span class=p>)</span>
             <span class=k>if</span> <span class=n>changed_file</span><span class=p>:</span>
                 <span class=n>cache</span><span class=o>.</span><span class=n>add_file</span><span class=p>(</span><span class=n>changed_file</span><span class=p>)</span>
         <span class=k>except</span> <span class=n>TurtleCanonException</span> <span class=k>as</span> <span class=n>exception</span><span class=p>:</span>
-            <span class=k>if</span> <span class=n>args</span><span class=o>.</span><span class=n>fail_fast</span><span class=p>:</span>
+            <span class=k>if</span> <span class=n>parsed_args</span><span class=o>.</span><span class=n>fail_fast</span><span class=p>:</span>
                 <span class=n>utils</span><span class=o>.</span><span class=n>print_error</span><span class=p>(</span><span class=n>exception</span><span class=p>)</span>
             <span class=k>else</span><span class=p>:</span>
                 <span class=n>cache</span><span class=o>.</span><span class=n>add_error</span><span class=p>(</span><span class=n>exception</span><span class=p>)</span>
