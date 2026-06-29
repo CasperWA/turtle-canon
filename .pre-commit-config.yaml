@@ -45,7 +45,7 @@ repos:
   - id: docs-landing-page
 
 - repo: https://github.com/astral-sh/ruff-pre-commit
-  rev: v0.15.18
+  rev: v0.15.20
   hooks:
   - id: ruff-check
     name: ruff
