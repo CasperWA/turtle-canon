@@ -90,6 +90,7 @@ def test_export_ontology(top_dir: Path, tmp_dir: Path) -> None:
     """Test `export_ontology()` runs."""
     import re
     import shutil
+    from pathlib import Path
 
     from rdflib import Graph
     from rdflib import __version__ as rdflib_version
